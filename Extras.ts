@@ -5,7 +5,7 @@
  * @returns a Sheet object, see [this](https://developers.google.com/apps-script/reference/spreadsheet/sheet)
  */
 // @ts-expect-error: Sheet only exists within google app scripts 
-function get_sheet(sheet_name: string): Sheet {
+export function get_sheet(sheet_name: string): Sheet {
     // @ts-expect-error: SpreadsheetApp only exists within google app scripts 
     return SpreadsheetApp.getActiveSpreadSheet().getSheetByName(sheet_name)
 }
@@ -19,7 +19,7 @@ function get_sheet(sheet_name: string): Sheet {
  * @param col the column of the cell
  * @param sheet_name the name of the sheet
  */
-function custom_number(is_se:boolean, row: number, col: number, sheet_name: string) {
+export function custom_number(is_se:boolean, row: number, col: number, sheet_name: string) {
     const abbreviations: Map<string, string> = new Map([
         ['+3', 'k'],  // thousand
         ['+6', 'm'],  // million
@@ -48,30 +48,29 @@ function custom_number(is_se:boolean, row: number, col: number, sheet_name: stri
     } else {
         sheet.getRange(row, col).setNumberFormat("0")
     }
+}
 
-    /**
-     * returns the value of Property  with the specified name, if it exists. 
-     * See [this](https://developers.google.com/apps-script/reference/properties/) 
-     * for what Properties are
-     * 
-     * @param key the key of the property(name)
-     * @returns the value of that specified property
-     */
-    function get_script_properties(key): string {
-        // @ts-expect-error: PropertiesService only exists in Google App Scripts
-        return PropertiesService.getScriptProperties().getProperty(key)
-    }
+/**
+ * returns the value of Property  with the specified name, if it exists. 
+ * See [this](https://developers.google.com/apps-script/reference/properties/) 
+ * for what Properties are
+ * 
+ * @param key the key of the property(name)
+ * @returns the value of that specified property
+ */
+export function get_script_properties(key): string {
+    // @ts-expect-error: PropertiesService only exists in Google App Scripts
+    return PropertiesService.getScriptProperties().getProperty(key)
+}
     
-    /**
-     * 
-     * @param key the name of the property
-     * @param value the new value of the property
-     * @returns the [Properties](https://developers.google.com/apps-script/reference/properties/properties#setProperty(String,String)) that was just modified
-     */
-    // @ts-expect-error: Properties only exists within google app scripts
-    function set_script_property(key, value): Properties {
-        // @ts-expect-error: PropertiesService only exists in Google App Scripts
-        return PropertiesService.getScriptProperties().setProperty(key, value)
-    }
-      
+/**
+ * 
+ * @param key the name of the property
+ * @param value the new value of the property
+ * @returns the [Properties](https://developers.google.com/apps-script/reference/properties/properties#setProperty(String,String)) that was just modified
+ */
+// @ts-expect-error: Properties only exists within google app scripts
+export function set_script_property(key, value): Properties {
+    // @ts-expect-error: PropertiesService only exists in Google App Scripts
+    return PropertiesService.getScriptProperties().setProperty(key, value)
 }
