@@ -1,0 +1,8 @@
+# Node
+node_modules
+
+# VS Code
+*vscode
+
+# Clasp private info
+.clasp.json
