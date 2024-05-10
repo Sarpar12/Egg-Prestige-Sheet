@@ -1,5 +1,5 @@
 class GameSave {
-    readonly save;
+    readonly save:JSON;
 
     /**
      * initializes the save variable of this instance 
@@ -23,6 +23,7 @@ class GameSave {
      * 
      * @returns SE count as number 
      */
+    // @ts-expect-error: game exists within the output, however ts doesn't know this
     get SE(): number { return parseFloat(this.save.game.soulEggsD) }
     
     /**
@@ -30,6 +31,7 @@ class GameSave {
      * 
      * @returns PE count as number
      */
+    // @ts-expect-error: game exists within the output, however ts doesn't know this
     get PE(): number { return parseInt(this.save.game.eggsOfProphecy) }
     
     /**
@@ -37,6 +39,7 @@ class GameSave {
      * 
      * @returns Prestige Number as number
      */
+    // @ts-expect-error: game exists within the output, however ts doesn't know this
     get prestiges(): number { return this.save.stats.numPrestiges }
     
     /**
@@ -44,6 +47,7 @@ class GameSave {
      * 
      * @returns UNIX time of save as number
      */
+    // @ts-expect-error: game exists within the output, however ts doesn't know this
     get time(): number { return Math.floor(this.save.settings.lastBackupTime) }
   
     /**
@@ -51,6 +55,7 @@ class GameSave {
      * 
      * @returns ER as JSON
      */
+    // @ts-expect-error: game exists within the output, however ts doesn't know this
     get ER(): JSON { return this.save.game.epicResearch }
 
     /**
@@ -117,6 +122,6 @@ class GameSave {
      * Wrapper for calc_JER()
      * 
      * @returns JER of save as number
-     */
+    */
     get JER(): number { return this.calc_JER() }
 }
