@@ -42,7 +42,7 @@ function custom_number(is_se:boolean, row: number, col: number, sheet_name: stri
     // toExponential() returns as string object
     let number: String = sheet.getRange(row, col).getValue().toExponential()
     let ending: String = number.slice(number.search(/[E]/i)+2, number.length)
-    let div_ending = parseInt(ending.valueOf()) % 3
+    let div_ending = parseInt(ending.valueOf()) - parseInt(ending.valueOf()) % 3
     if (abbreviations.has(`+${div_ending}`)) {
         var str_format = `[>=1E+${div_ending}]0.000${",".repeat(div_ending/3)}"${abbreviations.get(`+${div_ending}`)}${string_postfix}";`
         sheet.getRange(row, col).setNumberFormat(str_format)

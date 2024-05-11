@@ -251,17 +251,17 @@ function fill_cells(dupe_enabled, automatic) {
  */
 function sheet_fill(data) {
     // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prestige Data");
     sheet.getRange(sheet.getLastRow() + 1, 1, 1, data[0].length).setValues(data)
     set_color(sheet, sheet.getLastRow(), 1, data[0])
-    custom_number(false, sheet.getLastRow(), 1, "Sheet1")
-    custom_number(true, sheet.getLastRow(), 2, "Sheet1")
+    custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
+    custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
     link_latest()
 }
 
 /**
  * sets the background color for the specified cells
- * @param sheet the active sheet(ie: :"sheet1")
+ * @param sheet the active sheet(ie: :"Prestige Data")
  * @param x the row of the cell
  * @param y the column of the cell
  * @param data the array from get_data()
@@ -314,7 +314,7 @@ function check_dupe(save) {
     //EID = PropertiesService.getScriptProperties().getProperty('EID')
     //var response = JSON.parse(UrlFetchApp.fetch(`https://eiapi-production.up.railway.app/callkev?EID=${EID}`).getContentText())
     // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1")
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prestige Data")
     var old_eb = sheet.getRange(sheet.getLastRow(), 1).getValue()
     return save.EB == old_eb
 }
@@ -407,7 +407,7 @@ function display_time_format() {
 function link_latest() {
     // This section creates the formula that will do the jump
     // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    let spreadsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1")
+    let spreadsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prestige Data")
     // last_row is a Number 
     let last_row = Math.round(spreadsheet.getLastRow())
     let jump_url = `=HYPERLINK("#gid=0range=A${last_row}", "Latest Update")`
