@@ -1,4 +1,4 @@
-export class GameSave {
+class GameSave {
     readonly save:JSON;
 
     /**

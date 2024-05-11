@@ -5,9 +5,10 @@
  * @returns a Sheet object, see [this](https://developers.google.com/apps-script/reference/spreadsheet/sheet)
  */
 // @ts-expect-error: Sheet only exists within google app scripts 
-export function get_sheet(sheet_name: string): Sheet {
+function get_sheet(sheet_name: string): Sheet {
     // @ts-expect-error: SpreadsheetApp only exists within google app scripts 
-    return SpreadsheetApp.getActiveSpreadSheet().getSheetByName(sheet_name)
+    return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheet_name);
+    // return SpreadsheetApp.getActiveSpreadSheet().getSheetByName(sheet_name)
 }
 
 /**
@@ -19,7 +20,7 @@ export function get_sheet(sheet_name: string): Sheet {
  * @param col the column of the cell
  * @param sheet_name the name of the sheet
  */
-export function custom_number(is_se:boolean, row: number, col: number, sheet_name: string) {
+function custom_number(is_se:boolean, row: number, col: number, sheet_name: string) {
     const abbreviations: Map<string, string> = new Map([
         ['+3', 'k'],  // thousand
         ['+6', 'm'],  // million
@@ -58,7 +59,7 @@ export function custom_number(is_se:boolean, row: number, col: number, sheet_nam
  * @param key the key of the property(name)
  * @returns the value of that specified property
  */
-export function get_script_properties(key): string {
+function get_script_properties(key): string {
     // @ts-expect-error: PropertiesService only exists in Google App Scripts
     return PropertiesService.getScriptProperties().getProperty(key)
 }
@@ -70,7 +71,7 @@ export function get_script_properties(key): string {
  * @returns the [Properties](https://developers.google.com/apps-script/reference/properties/properties#setProperty(String,String)) that was just modified
  */
 // @ts-expect-error: Properties only exists within google app scripts
-export function set_script_property(key, value): Properties {
+function set_script_property(key, value): Properties {
     // @ts-expect-error: PropertiesService only exists in Google App Scripts
     return PropertiesService.getScriptProperties().setProperty(key, value)
 }

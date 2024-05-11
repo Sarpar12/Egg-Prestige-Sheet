@@ -1,5 +1,3 @@
-import { custom_number, get_script_properties, set_script_property }  from "./Extras";  
-import { GameSave } from "./GameSave";
 // credit to @toffepeer
 /**
  * onOpen() is triggered whenever the sheet is opened. 
@@ -98,7 +96,7 @@ function create_auto_trigger() {
     }
     else {
         set_script_property("TRIGGER_TIME", `${response}`)
-        if (get_script_properties("TRIGGER_SET") === "false" || !get_script_properties("TRIGGER_SET")) {
+        if ((get_script_properties("TRIGGER_SET")) === "false" || !(get_script_properties("TRIGGER_SET"))) {
             // @ts-expect-error: ScriptApp only exists in Google App Scripts
             ScriptApp.newTrigger('refresh_auto').timeBased().everyHours(response).create()
             set_script_property("TRIGGER_SET", "true")
@@ -116,7 +114,7 @@ function create_auto_trigger() {
  * If no trigger exists, a messsage will be shown and nothing else will happen
  */
 function remove_trigger() {
-    if (get_script_properties("TRIGGER_SET") === "false" || !get_script_properties("TRIGGER_SET")) {
+    if ((get_script_properties("TRIGGER_SET") === "false") || !(get_script_properties("TRIGGER_SET"))) {
         // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         SpreadsheetApp.getUi().alert("No Trigger has been set!")
     } else {
@@ -134,13 +132,12 @@ function remove_trigger() {
  * time. If no trigger exists, it will display a different message
  */
 function automatic_trigger_info() {
-    if (!get_script_properties("TRIGGER_TIME")) {
+    if (!(get_script_properties("TRIGGER_TIME"))) {
         // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         SpreadsheetApp.getUi().alert(`No Trigger has been set!\nLast Updated: ${get_script_properties("LAST_UPDATED")}`)
     } else {
         // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert(`A trigger is set to run every ${get_script_properties("TRIGGER_TIME")} hours.
-                                \nLast Updated: ${get_script_properties("LAST_UPDATED")}`)
+        SpreadsheetApp.getUi().alert(`A trigger is set to run every ${get_script_properties("TRIGGER_TIME")} hours.\nLast Updated: ${get_script_properties("LAST_UPDATED")}`)
     }
 }
 
@@ -195,6 +192,16 @@ function convert_time(timestamp) {
 }
 
 /**
+ * gets the set timezone of the sheet
+ * 
+ * @returns the timezone of the Sheet as a string
+ */
+function get_tz(): string {
+    // @ts-expect-error: SpreadsheetApp only exists on google sheets
+    return SpreadsheetApp.getActive().getSpreadsheetTimeZone()
+}
+
+/**
  * Wrapper Function for fill_cells,
  * passes in the parameter
  */
@@ -210,7 +217,7 @@ function refresh_data() {
  * assumes EID exists
  */
 function refresh_auto() {
-    fill_cells(get_script_properties("DUPE_ENABLED") === "true", true)
+    fill_cells((get_script_properties("DUPE_ENABLED") === "true"), true)
 }
 
 /**
@@ -286,10 +293,10 @@ function set_update_time() {
  * shhows the current status of DUPE_ENABLED
  */
 function dupe_status() {
-    if (!get_script_properties("DUPE_ENABLED")) {
+    if (!(get_script_properties("DUPE_ENABLED"))) {
         set_script_property("DUPE_ENABLED", "false")
     }
-    if (get_script_properties("DUPE_ENABLED") === "true") {
+    if ((get_script_properties("DUPE_ENABLED")) === "true") {
         // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         SpreadsheetApp.getUi().alert(`Duplicate Entries are enabled`);
     } else {
@@ -316,7 +323,7 @@ function check_dupe(save) {
  * enables or disables duplicate entries
  */
 function toggle_duplicates() {
-    if (get_script_properties("DUPE_ENABLED") === "true") {
+    if ((get_script_properties("DUPE_ENABLED") === "true")) {
         set_script_property("DUPE_ENABLED", "false")
     } else {
         set_script_property("DUPE_ENABLED", "true")
@@ -380,7 +387,7 @@ function set_time_format(hours_enabled, is_MM_dd) {
  * @returns time format as a string
  */
 function get_time_format() {
-    if (!get_script_properties("TIME_FORMAT")) {
+    if (!(get_script_properties("TIME_FORMAT"))) {
         set_script_property("TIME_FORMAT", "MM-dd-yyyy HH:mm:ss")
     }
     return get_script_properties("TIME_FORMAT")
