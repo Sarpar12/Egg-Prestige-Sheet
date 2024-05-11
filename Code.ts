@@ -224,7 +224,7 @@ function refresh_auto() {
  * conditional logic to check if the sheet can be filled in
  * @param dupe_enabled if the property DUPE_ENABLED ISis "true" 
  */
-function fill_cells(dupe_enabled, automatic) {
+function fill_cells(dupe_enabled: boolean, automatic: boolean) {
     let save = new GameSave(get_script_properties('EID'))
     let data = [get_data(save)]
     if (dupe_enabled) {
@@ -249,13 +249,17 @@ function fill_cells(dupe_enabled, automatic) {
  * 
  * @param data [eb, se, pe, prestiges, time, mer, jer]
  */
-function sheet_fill(data) {
+function sheet_fill(data: any[]) {
     // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prestige Data");
+    if (sheet.getLastRow() === 0) {
+        set_sheet_header()
+    }
     sheet.getRange(sheet.getLastRow() + 1, 1, 1, data[0].length).setValues(data)
     set_color(sheet, sheet.getLastRow(), 1, data[0])
     custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
     custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
+    sheet.autoResizeColumns(1, 8); // automatically resizes the first 8 columns
     link_latest()
 }
 
@@ -266,14 +270,35 @@ function sheet_fill(data) {
  * @param y the column of the cell
  * @param data the array from get_data()
  */
-function set_color(sheet, x, y, data) {
-    if (x % 2 == 0) {
-        sheet.getRange(x, y, 1, data.length).setBackground('#696969')
-        sheet.getRange(x, y, 1, data.length).setFontColor('white')
+// @ts-expect-error: Sheet only exists in Google Sheets
+function set_color(sheet: Sheet, row: number, col: number, data: any[]) {
+    if (row % 2 == 0) {
+        sheet.getRange(row, col, 1, data.length).setBackground('#696969')
+        sheet.getRange(row, col, 1, data.length).setFontColor('white')
     } else {
-        sheet.getRange(x, y, 1, data.length).setBackground('#DCDCDC')
-        sheet.getRange(x, y, 1, data.length).setFontColor('black')
+        sheet.getRange(row, col, 1, data.length).setBackground('#DCDCDC')
+        sheet.getRange(row, col, 1, data.length).setFontColor('black')
     }
+}
+
+/**
+ * Sets the header(1st) row of the google sheets to the below 
+ * 
+ * | EB | SE | PE | Prestige Number | Date Pulled | MER | JER | 
+ * 
+ * @precondition the first row of the sheet must be empty
+ */
+function set_sheet_header() {
+    // @ts-expect-error: Sheet only exists within Google Sheets
+    let sheet: Sheet = get_sheet("Prestige Data")
+    let str_arr: string[] = "EB, SE, PE, Prestige #, Date Pulled, MER, JER".split(", ")
+    sheet.getRange(1, 1, 1, str_arr.length).setValues([str_arr])
+    sheet.getRange(1, 1, 1, str_arr.length).setHorizontalAlignment("center");
+    sheet.getRange(1, 1, 1, str_arr.length).setBackground('#3cdddc')
+
+    // Sheet Manipulation
+    sheet.setHiddenGridlines(true) // hides the gridlines
+    sheet.setFrozenRows(1) // Freezes the first row(it's always displayed)
 }
 
 /**
@@ -307,10 +332,10 @@ function dupe_status() {
 
 /**
  * checks if two eb's are the same
- * @param save : an instance of GameSave
+ * @param save an instance of GameSave
  * @returns true if the new eb is the same as the old eb
  */
-function check_dupe(save) {
+function check_dupe(save: GameSave) {
     //EID = PropertiesService.getScriptProperties().getProperty('EID')
     //var response = JSON.parse(UrlFetchApp.fetch(`https://eiapi-production.up.railway.app/callkev?EID=${EID}`).getContentText())
     // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
@@ -366,7 +391,7 @@ function set_time_wrapper_4() {
  * @param hours_enabled if hours should be displayed
  * @param is_MM_dd where it should be mm-dd or dd-mm(smh europeans)
  */
-function set_time_format(hours_enabled, is_MM_dd) {
+function set_time_format(hours_enabled: boolean, is_MM_dd: boolean) {
     let hours = "HH:mm:ss"
     let time = "MM-dd-yyyy"
     if (!is_MM_dd) {
@@ -415,4 +440,5 @@ function link_latest() {
     // This section adds it to the sheet itself at an fixed postion
     // Values will most likely be fixed
     spreadsheet.getRange(2, 10, 1).setValue(jump_url)
+    spreadsheet.getRange(2, 10, 1).setBackground('#DCDCDC')
 }
