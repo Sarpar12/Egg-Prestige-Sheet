@@ -2,8 +2,9 @@ import { custom_number, get_script_properties, set_script_property }  from "./Ex
 import { GameSave } from "./GameSave";
 // credit to @toffepeer
 /**
- * onOpen() is triggered whenever the sheet is opened.
+ * onOpen() is triggered whenever the sheet is opened. 
  * Currently, it creates a menu shown below
+ * 
  * Data Fetching
  *  - Refresh
  *  - Automatic Updates
@@ -16,6 +17,8 @@ import { GameSave } from "./GameSave";
  *  - EID Stuff
  *    - Set EID
  *    - Show EID currently saved
+ *  - Extras
+ *    - Format Gains
  * For each item, unless it's a submenu name, it will call 
  * the corresponding function in the 2nd parameter
  */
@@ -56,7 +59,7 @@ function onOpen() {
 }
 
 /**
- * Formats the gains found in the Calculations Sheet
+ * Formats the gains found in the Calculations Sheet, 
  * currently formats SE gain, EB gain, EB and SE 
  * cells
  */
@@ -78,7 +81,7 @@ function format_gains() {
 }
 
 /**
- * creates a trigger that automatically runs every ${user_input} hours,
+ * creates a trigger that automatically runs every ${user_input} hours, 
  * A succesful run will update the properties TRIGGER_SET and TRIGGER_TIME.
  * 
  * THERE CAN ONLY BE ONE TRIGGER 
@@ -109,7 +112,7 @@ function create_auto_trigger() {
 }
 
 /**
- * removes a trigger if it already exists and updates properties TRIGGER_TIME and TRIGGER_SET
+ * removes a trigger if it already exists and updates properties TRIGGER_TIME and TRIGGER_SET. 
  * If no trigger exists, a messsage will be shown and nothing else will happen
  */
 function remove_trigger() {
@@ -142,9 +145,7 @@ function automatic_trigger_info() {
 }
 
 /**
- * EID:
- * setEID stores it inside a script property(and validates input)
- * showEID shows the EID to the user
+ * stores an EID inside a script property(and validates EID's)
  */
 function setEID() {
     var regex = /^EI\d{16}$/; // Regular expression for the specified format
@@ -163,6 +164,9 @@ function setEID() {
     }
 }
 
+/**
+ * Shows the EID in the form of a UI popup
+ */
 function showEID() {
     // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
     SpreadsheetApp.getUi().alert(`The EID currently stored is: ${get_script_properties('EID')}`);
@@ -201,6 +205,10 @@ function refresh_data() {
     fill_cells(get_script_properties("DUPE_ENABLED") === "true", false)
 }
 
+/**
+ * this function is called from the automatic trigger, 
+ * assumes EID exists
+ */
 function refresh_auto() {
     fill_cells(get_script_properties("DUPE_ENABLED") === "true", true)
 }
@@ -398,5 +406,6 @@ function link_latest() {
     let jump_url = `=HYPERLINK("#gid=0range=A${last_row}", "Latest Update")`
 
     // This section adds it to the sheet itself at an fixed postion
+    // Values will most likely be fixed
     spreadsheet.getRange(2, 10, 1).setValue(jump_url)
 }
