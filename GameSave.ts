@@ -8,7 +8,7 @@ class GameSave {
      */
     constructor (EID: string) {
         // @ts-ignore - UrlFetchApp only exists within google app scripts
-        this.save = JSON.parse(UrlFetchApp.fetch(`https://eiapi-production.up.railway.app/callkev?EID=${EID}`).getContentText())
+        this.save = JSON.parse(UrlFetchApp.fetch(`https://ei_worker.tylertms.workers.dev/backup?EID=${EID}`).getContentText())
     }
 
     /**
@@ -56,7 +56,7 @@ class GameSave {
      * @returns ER as JSON
      */
     // @ts-expect-error: game exists within the output, however ts doesn't know this
-    get ER(): JSON { return this.save.game.epicResearch }
+    get ER(): JSON { return this.save.game.epicResearchList }
 
     /**
      * Gets the path object of requested path
@@ -84,7 +84,7 @@ class GameSave {
      * 
      * @returns the eb of the save as number
      */
-    calc_EB(): number{
+    calc_EB(): number {
         let soulER = this.ER[15].level
         let propER = this.ER[21].level
         return (this.SE*(10+soulER))*(((1.05 + (0.01 * propER))**this.PE))
