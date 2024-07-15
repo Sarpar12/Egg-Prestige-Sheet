@@ -259,7 +259,6 @@ function sheet_fill(data: any[]) {
     set_color(sheet, sheet.getLastRow(), 1, data[0])
     custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
     custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
-    sheet.autoResizeColumns(1, 8); // automatically resizes the first 8 columns
     link_latest()
 }
 
