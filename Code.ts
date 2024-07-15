@@ -255,7 +255,9 @@ function sheet_fill(data: any[]) {
     if (sheet.getLastRow() === 0) {
         set_sheet_header()
     }
+    data[0].push("")
     sheet.getRange(sheet.getLastRow() + 1, 1, 1, data[0].length).setValues(data)
+    sheet.getRange(sheet.getLastRow(), 1, 1, data[0].length).setHorizontalAlignment('left')
     set_color(sheet, sheet.getLastRow(), 1, data[0])
     custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
     custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
@@ -290,10 +292,12 @@ function set_color(sheet: Sheet, row: number, col: number, data: any[]) {
 function set_sheet_header() {
     // @ts-expect-error: Sheet only exists within Google Sheets
     let sheet: Sheet = get_sheet("Prestige Data")
-    let str_arr: string[] = "EB, SE, PE, Prestige #, Date Pulled, MER, JER".split(", ")
+    let str_arr: string[] = "EB, SE, PE, Prestige #, Date Pulled, MER, JER, Notes".split(", ")
     sheet.getRange(1, 1, 1, str_arr.length).setValues([str_arr])
     sheet.getRange(1, 1, 1, str_arr.length).setHorizontalAlignment("center");
     sheet.getRange(1, 1, 1, str_arr.length).setBackground('#3cdddc')
+    sheet.getRange(1, 1, 1, str_arr.length).setFontWeight("bold")
+    sheet.getRange(1, 1, 1, str_arr.length).setFontStyle("italic")
 
     // Sheet Manipulation
     sheet.setHiddenGridlines(true) // hides the gridlines
