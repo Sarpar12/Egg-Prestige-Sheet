@@ -447,10 +447,10 @@ function link_latest() {
 function set_calc_header() {
     let sheet = get_sheet("Calculations")
     // Create a 1x3 area(vertical)
-    let select_vars : [[string], [string], [string]] = [["Selected Role:"], ["Selected JER:"], ["Selected MER:"]]
+    let select_vars : [[string], [string], [string], [string]] = [["Selected Role:"], ["Selected EB"], ["Selected JER:"], ["Selected MER:"]]
     // (Starting row, starting column, row number, col number)
     // DO NOT USE: (1, 2), (2, 2), "(3, 2)
-    sheet.getRange(1, 1, 3, 1).setValues(select_vars)
+    sheet.getRange(1, 1, 4, 1).setValues(select_vars)
         .setBackground('#F1EE8E')
         .setFontColor('black')
         .setFontWeight('bold')
@@ -479,12 +479,13 @@ function set_calc_header() {
         .setFontWeight('bold')
 
     // Setting up the "current value" headers
-    sheet.getRange("A4:B4").merge().setBackground('#000000') // separator
-    let current_headers : string[] = ["Current Role", "Current JER", "Current MER"]
+    sheet.getRange("A5:B5").merge().setBackground('#000000') // separator
+    let current_headers : string[] = ["Current Role", "Current EB", "Current JER", "Current MER"]
     let current_values : any[] = get_current_values()
     let combined_list = current_headers.map((item, index) => [item, current_values[index]])
-    sheet.getRange("A5:B7").setValues(combined_list)
-    
+    sheet.getRange("A6:B9").setValues(combined_list)
+    custom_number(true, 7, 2, "Calculations") // Display EB with custom number
+
     // Setting up remaing things
     create_role_dropdown()
     create_dv_jer_mer()
@@ -514,10 +515,10 @@ function create_dv_jer_mer() {
 }
 
 /**
- * gets the current values for Role, JER, and MER
- * @returns [string, number, number], the current role, jer, mer, values
+ * gets the current values for Role, eb, JER, and MER
+ * @returns [string, number, number, number], the current role, eb, jer, mer, values
  */
 function get_current_values() : any[] {
     let save = new GameSave(get_script_properties("EID"))
-    return [EB_to_role(save.EB), save.JER, save.MER]
+    return [EB_to_role(save.EB), save.EB, save.JER, save.MER]
 }
