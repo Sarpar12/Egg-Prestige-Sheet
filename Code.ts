@@ -51,8 +51,15 @@ function onOpen() {
             .addItem('Current Time Format', 'display_time_format'))
         .addSeparator()
         // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
+        .addSubMenu(SpreadsheetApp.getUi().createMenu('Calculations')
+            .addItem("Calculate PE/SE for EB%", "calc_pese_eb")
+            .addItem("Calculate PE/SE for MER", "calc_pese_mer")
+            .addItem("Calculate PE/SE for JER", "calc_pese_jer"))
+        .addSeparator()
+        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         .addSubMenu(SpreadsheetApp.getUi().createMenu('Extras')
-            .addItem("Format Gains", "format_gains"))
+            .addItem("Format Gains", "format_gains")
+            .addItem("TESTING: calc_header", "set_calc_header"))
         .addToUi();
 }
 
@@ -424,7 +431,7 @@ function link_latest() {
 
     // This section adds it to the sheet itself at an fixed postion
     // Values will most likely be fixed
-    spreadsheet.getRange(2, 10, 1).setValue(jump_url).setBackground('#DCDCDC')
+    spreadsheet.getRange(2, 10, 1).setValue(jump_url).setBackground('#DCDCDC').setFontWeight('bold')
 }
 
 ///////////////////////////
@@ -440,7 +447,7 @@ function link_latest() {
 function set_calc_header() {
     let sheet = get_sheet("Calculations")
     // Create a 1x3 area(vertical)
-    let select_vars : [string, string, string] = ["Selected Role:", "Selected JER:", "Selected MER:"]
+    let select_vars : [[string], [string], [string]] = [["Selected Role:"], ["Selected JER:"], ["Selected MER:"]]
     // (Starting row, starting column, row number, col number)
     // DO NOT USE: (1, 2), (2, 2), "(3, 2)
     sheet.getRange(1, 1, 3, 1).setValues(select_vars)
