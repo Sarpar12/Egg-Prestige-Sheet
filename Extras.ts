@@ -97,3 +97,15 @@ function create_data_validation_dropdown(cell, values) {
     let data_validation_rule = SpreadsheetApp.newDataValidation().requireValueInList(values).build()
     cell.setDataValidation(data_validation_rule)
 }
+
+/**
+ * creates a data validation to make sure the input is a number
+ * @param cell the cell to create a data validation in
+ * @param value1 the lower value
+ * @param value2 the highe value(limit)
+ */
+function create_data_validation_numerical(cell, value1 : number, value2: number) {
+    // @ts-expect-error: SpreadsheetApp is only found online
+    let data_validation_rule = SpreadsheetApp.newDataValidation().requireNumberBetween(value1, value2).build()
+    cell.setDataValidation(data_validation_rule)
+}

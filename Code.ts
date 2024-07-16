@@ -479,6 +479,7 @@ function set_calc_header() {
         .setFontWeight('bold')
 
     create_role_dropdown()
+    create_dv_jer_mer()
 }
 
 /**
@@ -491,4 +492,15 @@ function create_role_dropdown() {
         return
     }
     create_data_validation_dropdown(cell, role_list)
+}
+
+/**
+ * creates data validation rules for JER and MER input cells
+ */
+function create_dv_jer_mer() {
+    let sheet = get_sheet("Calculations")
+    let mer_cell = sheet.getRange("B2")
+    let jer_cell = sheet.getRange("B3")
+    create_data_validation_numerical(mer_cell, 1, 100)
+    create_data_validation_numerical(jer_cell, 1, 200)
 }
