@@ -91,8 +91,7 @@ function create_auto_trigger() {
     // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
     let response = Math.round(parseFloat(SpreadsheetApp.getUi().prompt("Please enter the duration between each update(in hours): ").getResponseText()))
     if (!response || response == 0) {
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert("Not a valid input!")
+        alert("Not a valid input!")
     }
     else {
         set_script_property("TRIGGER_TIME", `${response}`)
@@ -100,11 +99,9 @@ function create_auto_trigger() {
             // @ts-expect-error: ScriptApp only exists in Google App Scripts
             ScriptApp.newTrigger('refresh_auto').timeBased().everyHours(response).create()
             set_script_property("TRIGGER_SET", "true")
-            // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-            SpreadsheetApp.getUi().alert(`The sheet will update every ${get_script_properties("TRIGGER_TIME")} hours.`);
+            alert(`The sheet will update every ${get_script_properties("TRIGGER_TIME")} hours.`);
         } else {
-            // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-            SpreadsheetApp.getUi().alert(`A trigger is set to run every ${get_script_properties("TRIGGER_TIME")} hours already exists! No trigger was added.`);
+            alert(`A trigger is set to run every ${get_script_properties("TRIGGER_TIME")} hours already exists! No trigger was added.`);
         }
     }
 }
@@ -115,8 +112,7 @@ function create_auto_trigger() {
  */
 function remove_trigger() {
     if ((get_script_properties("TRIGGER_SET") === "false") || !(get_script_properties("TRIGGER_SET"))) {
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert("No Trigger has been set!")
+        alert("No Trigger has been set!")
     } else {
         // @ts-expect-error: ScriptApp only exists in Google App Scripts
         ScriptApp.deleteTrigger(ScriptApp.getProjectTriggers()[0])
@@ -133,11 +129,9 @@ function remove_trigger() {
  */
 function automatic_trigger_info() {
     if (!(get_script_properties("TRIGGER_TIME"))) {
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert(`No Trigger has been set!\nLast Updated: ${get_script_properties("LAST_UPDATED")}`)
+        alert(`No Trigger has been set!\nLast Updated: ${get_script_properties("LAST_UPDATED")}`)
     } else {
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert(`A trigger is set to run every ${get_script_properties("TRIGGER_TIME")} hours.\nLast Updated: ${get_script_properties("LAST_UPDATED")}`)
+        alert(`A trigger is set to run every ${get_script_properties("TRIGGER_TIME")} hours.\nLast Updated: ${get_script_properties("LAST_UPDATED")}`)
     }
 }
 
@@ -153,11 +147,9 @@ function setEID() {
     // Check if the entered EID matches the required format
     if (regex.test(EID)) {
         set_script_property('EID', EID)
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert(`Your EID ${EID} was stored successfully`);
+        alert(`Your EID ${EID} was stored successfully`);
     } else {
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert('Invalid EID format. Please try again and enter EID in the format EI1234567890123456');
+        alert('Invalid EID format. Please try again and enter EID in the format EI1234567890123456');
     }
 }
 
@@ -165,8 +157,7 @@ function setEID() {
  * Shows the EID in the form of a UI popup
  */
 function showEID() {
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    SpreadsheetApp.getUi().alert(`The EID currently stored is: ${get_script_properties('EID')}`);
+    alert(`The EID currently stored is: ${get_script_properties('EID')}`);
 }
 
 /**
@@ -233,8 +224,7 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) {
     } else {
         if (check_dupe(save)) {
             if (!automatic) {
-                // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-                SpreadsheetApp.getUi().alert(`Duplicate EB found, sheet remains unchanged`);
+                alert(`Duplicate EB found, sheet remains unchanged`);
             }
             return null
         } else {
@@ -325,11 +315,9 @@ function dupe_status() {
         set_script_property("DUPE_ENABLED", "false")
     }
     if ((get_script_properties("DUPE_ENABLED")) === "true") {
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert(`Duplicate Entries are enabled`);
+        alert(`Duplicate Entries are enabled`);
     } else {
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert(`Duplicate Entries are disabled`);
+        alert(`Duplicate Entries are disabled`);
     }
 }
 
@@ -404,8 +392,7 @@ function set_time_format(hours_enabled: boolean, is_MM_dd: boolean) {
         hours = ""
     }
     set_script_property("TIME_FORMAT", `${time} ${hours}`)
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    SpreadsheetApp.getUi().alert(`Time format has been set to ${get_script_properties("TIME_FORMAT")}`)
+    alert(`Time format has been set to ${get_script_properties("TIME_FORMAT")}`)
 } 
 
 /**
@@ -425,8 +412,7 @@ function get_time_format() {
  * displays current time format to user
  */
 function display_time_format() {
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    SpreadsheetApp.getUi().alert(`Your currently selected format is ${get_time_format()}`)
+    alert(`Your currently selected format is ${get_time_format()}`)
 }
 
 /**
@@ -434,8 +420,7 @@ function display_time_format() {
  */
 function link_latest() {
     // This section creates the formula that will do the jump
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    let spreadsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prestige Data")
+    let spreadsheet = get_sheet("Prestige Data")
     // last_row is a Number 
     let last_row = Math.round(spreadsheet.getLastRow())
     let jump_url = `=HYPERLINK("#gid=0range=A${last_row}", "Latest Update")`

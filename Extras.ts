@@ -11,6 +11,16 @@ function get_sheet(sheet_name: string): Sheet {
     // return SpreadsheetApp.getActiveSpreadSheet().getSheetByName(sheet_name)
 }
 
+
+/**
+ * Creates an alert, wrapper method for 
+ * `SpreadsheetApp.getUi().alert()`
+ */
+function alert(input: string) {
+    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
+    SpreadsheetApp.getUi().alert(input)
+}
+
 /**
  * Sets the custom number of a cell to format it to display
  * the correct letters
