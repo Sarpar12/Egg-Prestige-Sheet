@@ -47,8 +47,6 @@ const ALL_ROLES : string[] = [
     "Infinifarmer" // always keep it as the last one
 ];
 
-let gameSave : GameSave = new GameSave(get_script_properties("EID"))
-
 /**
  * converts an earnings bonus into a farmer role
  * @param EB the earnings bonus, as an number
@@ -79,7 +77,8 @@ function role_to_EB(role: string) : number{
  * @param gameSave the save file of the user
  * @returns a number list of [soul bounus, prop bonus]
  */
-function get_se_pe_bonus(gameSave) : number[] {
+function get_se_pe_bonus() : number[] {
+    let gameSave : GameSave = new GameSave(get_script_properties('EID'))
     return [gameSave.soul_bonus, gameSave.prop_bonus]
 }
 
