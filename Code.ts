@@ -64,6 +64,20 @@ function onOpen() {
 }
 
 /**
+ * currently updates selected eb to match the selected role
+ * @param e an event
+ */
+function onEdit(e) {
+    let range = e.range
+    if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
+        let sheet = get_sheet("Calculations")
+        let selectedRole = sheet.getRange("B1").getValue()
+        sheet.getRange("B2").setValue(role_to_EB(selectedRole))
+        custom_number(false, 2, 2, "Calculations")
+    }
+}
+
+/**
  * Formats the gains found in the Calculations Sheet, 
  * currently formats SE gain, EB gain, EB and SE 
  * cells
@@ -484,7 +498,7 @@ function set_calc_header() {
     let current_values : any[] = get_current_values()
     let combined_list = current_headers.map((item, index) => [item, current_values[index]])
     sheet.getRange("A6:B9").setValues(combined_list)
-    custom_number(true, 7, 2, "Calculations") // Display EB with custom number
+    custom_number(false, 7, 2, "Calculations") // Display EB with custom number
 
     // Setting up remaing things
     create_role_dropdown()
@@ -508,8 +522,8 @@ function create_role_dropdown() {
  */
 function create_dv_jer_mer() {
     let sheet = get_sheet("Calculations")
-    let mer_cell = sheet.getRange("B2")
-    let jer_cell = sheet.getRange("B3")
+    let mer_cell = sheet.getRange("B3")
+    let jer_cell = sheet.getRange("B4")
     create_data_validation_numerical(mer_cell, 1, 100)
     create_data_validation_numerical(jer_cell, 1, 200)
 }
