@@ -75,6 +75,13 @@ function onEdit(e) {
         sheet.getRange("B2").setValue(role_to_EB(selectedRole))
         custom_number(false, 2, 2, "Calculations")
     }
+    if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B4") {
+        if (range.getValue() == "") {
+            return
+        }
+        alert("MER Calculation in progress...")
+        update_MER_wrapper()
+    }
 }
 
 /**
@@ -535,4 +542,24 @@ function create_dv_jer_mer() {
 function get_current_values() : any[] {
     let save = new GameSave(get_script_properties("EID"))
     return [EB_to_role(save.EB), save.EB, save.JER, save.MER]
+}
+
+/**
+ * updates the MER displayed in the sheet\
+ * pulls information from Prestige Data sheet
+ */
+function update_MER_wrapper() {
+    // Initial Getting
+    let sheet = get_sheet('Calculations')
+    let prestige_sheet = get_sheet("Prestige Data")
+    let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
+    let target_mer = sheet.getRange("B4").getValue()
+    let mer_combos = calculate_sepe_target_MER(target_mer, sepe[0][1], sepe[0][0])
+    // Parsing the response
+    let data_length = mer_combos.length
+    for (let i = 0; i < data_length; i++) {
+        let values = [mer_combos[i].pe, mer_combos[i].se]
+        sheet.getRange(`G${3+i}:H${3+i}`).setValues([values])
+    }
+    custom_number_wrapper(true, 3, 2+data_length, 8, 8, "Calculations")
 }

@@ -62,6 +62,23 @@ function custom_number(is_se:boolean, row: number, col: number, sheet_name: stri
 }
 
 /**
+ * wrapper function for custom number, simply runs a loop
+ * @param is_se is the custom number for an se or eb
+ * @param start_row the starting row
+ * @param end_row the ending row
+ * @param start_col the starting column
+ * @param end_col the ending column
+ * @param sheet_name the name of the seet to set range for
+ */
+function custom_number_wrapper(is_se : boolean, start_row : number, end_row : number, start_col : number, end_col: number, sheet_name : string) {
+    for (let i = start_row; i <= end_row; i++) {
+        for (let j = start_col; j <= end_col; j++) {
+            custom_number(is_se, i, j, sheet_name)
+        }
+    }
+}
+
+/**
  * returns the value of Property  with the specified name, if it exists. 
  * See [this](https://developers.google.com/apps-script/reference/properties/) 
  * for what Properties are

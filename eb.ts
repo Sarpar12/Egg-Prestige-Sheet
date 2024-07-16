@@ -117,7 +117,7 @@ function calculate_se_target_MER(target_mer : number, pe : number) : number {
 function calculate_sepe_target_MER(target_mer : number, current_pe : number, current_se : number) {
     const combos = [];
     
-    for (let new_pe = 0; new_pe <= 8; new_pe += 2) {
+    for (let new_pe = 0; new_pe <= 5; new_pe += 1) {
         const se_needed = calculate_se_target_MER(target_mer, current_pe + new_pe);
         combos.push({
             pe: new_pe,
