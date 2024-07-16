@@ -117,8 +117,7 @@ function remove_trigger() {
         // @ts-expect-error: ScriptApp only exists in Google App Scripts
         ScriptApp.deleteTrigger(ScriptApp.getProjectTriggers()[0])
         set_script_property("TRIGGER_SET", "false")
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        SpreadsheetApp.getUi().alert(`The trigger that runs every ${get_script_properties("TRIGGER_TIME")} hours was removed.`);
+        alert(`The trigger that runs every ${get_script_properties("TRIGGER_TIME")} hours was removed.`);
         set_script_property("TRIGGER_TIME", "")
     }
 }
@@ -166,7 +165,7 @@ function showEID() {
  * @param save: an instance of the GameSave class
  * @return arr[]: [float, float, int, int, string, float, float]
  */
-function get_data(save) {
+function get_data(save : GameSave) {
     // [Eb%, Soul Eggs, EOP, prestiges, time of backup]
     return [save.EB, save.SE, save.PE, save.prestiges, convert_time(save.time), save.MER, save.JER]
 }
@@ -240,8 +239,7 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) {
  * @param data [eb, se, pe, prestiges, time, mer, jer]
  */
 function sheet_fill(data: any[]) {
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prestige Data");
+    var sheet = get_sheet("Prestige Data");
     if (sheet.getLastRow() === 0) {
         set_sheet_header()
     }
@@ -275,7 +273,7 @@ function set_color(sheet: Sheet, row: number, col: number, data: any[]) {
 /**
  * Sets the header(1st) row of the google sheets to the below 
  * 
- * | EB | SE | PE | Prestige Number | Date Pulled | MER | JER | 
+ * | EB | SE | PE | Prestige Number | Date Pulled | MER | JER | Notes 
  * 
  * @precondition the first row of the sheet must be empty
  */
@@ -329,8 +327,7 @@ function dupe_status() {
 function check_dupe(save: GameSave) {
     //EID = PropertiesService.getScriptProperties().getProperty('EID')
     //var response = JSON.parse(UrlFetchApp.fetch(`https://eiapi-production.up.railway.app/callkev?EID=${EID}`).getContentText())
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Prestige Data")
+    var sheet = get_sheet("Prestige Data")
     var old_eb = sheet.getRange(sheet.getLastRow(), 1).getValue()
     return save.EB == old_eb
 }
