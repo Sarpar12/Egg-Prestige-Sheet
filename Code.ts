@@ -212,7 +212,7 @@ function refresh_auto() {
 
 /**
  * conditional logic to check if the sheet can be filled in
- * @param dupe_enabled if the property DUPE_ENABLED ISis "true" 
+ * @param dupe_enabled if the property DUPE_ENABLED is "true" 
  */
 function fill_cells(dupe_enabled: boolean, automatic: boolean) {
     let save = new GameSave(get_script_properties('EID'))
@@ -425,4 +425,49 @@ function link_latest() {
     // This section adds it to the sheet itself at an fixed postion
     // Values will most likely be fixed
     spreadsheet.getRange(2, 10, 1).setValue(jump_url).setBackground('#DCDCDC')
+}
+
+///////////////////////////
+//////
+////// Code After this Point is
+////// for calculations only
+//////
+///////////////////////////
+
+/**
+ *  Sets the header row for 
+ */
+function set_calc_header() {
+    let sheet = get_sheet("Calculations")
+    // Create a 1x3 area(vertical)
+    let select_vars : [string, string, string] = ["Selected Role:", "Selected JER:", "Selected MER:"]
+    // (Starting row, starting column, row number, col number)
+    // DO NOT USE: (1, 2), (2, 2), "(3, 2)
+    sheet.getRange(1, 1, 3, 1).setValues(select_vars)
+        .setBackground('#F1EE8E')
+        .setFontColor('black')
+        .setFontWeight('bold')
+
+    // Setting up "header" rows, as in the rows about the actual header
+    let header : [string, string, string] = ["EB%", "JER", "MER"]
+    let rangeArray = []
+    rangeArray.push(sheet.getRange("C1:D1").merge())
+    rangeArray.push(sheet.getRange("E1:F1").merge())
+    rangeArray.push(sheet.getRange("G1:H1").merge())
+    for (let i = 0; i < rangeArray.length; i++) {
+        rangeArray[i].setValue(header[i]).setHorizontalAlignment('center')
+            .setBackground('#1565C0')
+            .setFontWeight('bold')
+            .setFontStyle('italic')
+            .setFontColor('black')
+    }
+
+    // Setting up the actual headers
+    // PE required | Se Required x3
+    let headers = ["PE Required", "SE Required"]
+    headers = Array(3).fill(headers).flat()
+    sheet.getRange("C2:H2").setValues(headers)
+        .setHorizontalAlignment('center')
+        .setBackground('#E3F2FD')
+        .setFontWeight('bold')
 }
