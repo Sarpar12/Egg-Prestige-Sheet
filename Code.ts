@@ -456,7 +456,7 @@ function set_calc_header() {
         .setFontWeight('bold')
 
     // Setting up "header" rows, as in the rows about the actual header
-    let header : [string, string, string] = ["EB%", "JER", "MER"]
+    let header : string[] = ["EB%", "JER", "MER"]
     let rangeArray = []
     rangeArray.push(sheet.getRange("C1:D1").merge())
     rangeArray.push(sheet.getRange("E1:F1").merge())
@@ -471,13 +471,21 @@ function set_calc_header() {
 
     // Setting up the actual headers
     // PE required | Se Required x3
-    let headers = ["PE Required", "SE Required"]
+    let headers : string[] = ["PE Required", "SE Required"]
     headers = Array(3).fill(headers).flat()
     sheet.getRange("C2:H2").setValues([headers])
         .setHorizontalAlignment('center')
         .setBackground('#E3F2FD')
         .setFontWeight('bold')
 
+    // Setting up the "current value" headers
+    sheet.getRange("A4:B4").merge().setBackground('#000000') // separator
+    let current_headers : string[] = ["Current Role", "Current JER", "Current MER"]
+    let current_values : any[] = get_current_values()
+    let combined_list = current_headers.map((item, index) => [item, current_values[index]])
+    sheet.getRange("A5:B7").setValues(combined_list)
+    
+    // Setting up remaing things
     create_role_dropdown()
     create_dv_jer_mer()
 }
@@ -503,4 +511,13 @@ function create_dv_jer_mer() {
     let jer_cell = sheet.getRange("B3")
     create_data_validation_numerical(mer_cell, 1, 100)
     create_data_validation_numerical(jer_cell, 1, 200)
+}
+
+/**
+ * gets the current values for Role, JER, and MER
+ * @returns [string, number, number], the current role, jer, mer, values
+ */
+function get_current_values() : any[] {
+    let save = new GameSave(get_script_properties("EID"))
+    return [EB_to_role(save.EB), save.JER, save.MER]
 }
