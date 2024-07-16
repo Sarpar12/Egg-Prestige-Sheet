@@ -82,3 +82,49 @@ function role_to_EB(role: string) : number{
 function get_se_pe_bonus(gameSave) : number[] {
     return [gameSave.soul_bonus, gameSave.prop_bonus]
 }
+
+/**
+ * calculates MER for a given se and pe amount
+ * @param pe the amount of pe 
+ * @param se the amount of se 
+ * @returns MER for the specified pe and se
+ */
+function calc_mer(pe : number, se : number) : number {
+    if (se <= 0) {
+        return 0
+    }
+    let seQ :number = se / 1e18;
+    return (91 * Math.log10(seQ) + 200 - pe) / 10;
+}
+
+/**
+ * finds the se need for a targeted mer
+ * @param target_mer the MER to be achieved
+ * @param pe the amount of pe to calcuate with
+ * @returns the number of SE required
+ */
+function calculate_se_target_MER(target_mer : number, pe : number) : number {
+    let exp : number = (10 * target_mer + pe - 200) / 91;
+    return (10 ** exp) * 1e18;
+}
+
+/**
+ * finds combinations of pe and se for the targeted MER
+ * @param target_mer the MER to be achieved
+ * @param current_pe the current pe amount
+ * @param current_se the current se amount
+ * @returns a list of combinations for the targetted mer
+ */
+function calculate_sepe_target_MER(target_mer : number, current_pe : number, current_se : number) {
+    const combos = [];
+    
+    for (let new_pe = 0; new_pe <= 8; new_pe += 2) {
+        const se_needed = calculate_se_target_MER(target_mer, current_pe + new_pe);
+        combos.push({
+            pe: new_pe,
+            se: Math.max(se_needed - current_se, 0)
+        });
+    }
+
+    return combos;
+}
