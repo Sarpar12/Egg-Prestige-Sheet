@@ -85,3 +85,15 @@ function set_script_property(key, value): Properties {
     // @ts-expect-error: PropertiesService only exists in Google App Scripts
     return PropertiesService.getScriptProperties().setProperty(key, value)
 }
+
+/**
+ * creates a dropdown menu(basically a data validation)
+ * for a specific cell
+ * @param cell the cell to add the data validation too
+ * @param values the list of values to add to the dropdown menu
+ */
+function create_data_validation_dropdown(cell, values) {
+    // @ts-expect-error: SpreadsheetApp is only found online
+    let data_validation_rule = SpreadsheetApp.newDataValidation().requireValueInList(values).build()
+    cell.setDataValidation(data_validation_rule)
+}

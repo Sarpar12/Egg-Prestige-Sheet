@@ -477,4 +477,18 @@ function set_calc_header() {
         .setHorizontalAlignment('center')
         .setBackground('#E3F2FD')
         .setFontWeight('bold')
+
+    create_role_dropdown()
+}
+
+/**
+ * creates the role dropdown, if no data validation rule exists for that cell
+ */
+function create_role_dropdown() {
+    let role_list : string[] = ALL_ROLES.slice(0, -1) // Remove infinifarmer from the list
+    let cell = get_sheet("Calculations").getRange("B1")
+    if (cell.getDataValidation() != null) {
+        return
+    }
+    create_data_validation_dropdown(cell, role_list)
 }
