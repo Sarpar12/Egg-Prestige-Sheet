@@ -1,4 +1,5 @@
 /// All credit for this code goes to @tiller.s on discord
+/// Their code was the basis for this
 
 const ALL_ROLES : string[] = [
     "Farmer I",
@@ -46,6 +47,8 @@ const ALL_ROLES : string[] = [
     "Infinifarmer" // always keep it as the last one
 ];
 
+let gameSave : GameSave = new GameSave(get_script_properties("EID"))
+
 /**
  * converts an earnings bonus into a farmer role
  * @param EB the earnings bonus, as an number
@@ -61,3 +64,21 @@ function EB_to_role(EB: number) : string {
     return ALL_ROLES[ind]
 }
 
+/**
+ * converts a given role into a eb role
+ * @param role the role selected
+ */
+function role_to_EB(role: string) : number{
+    // In case a role isn't found
+    let role_position : number = Math.max(ALL_ROLES.indexOf(role), 0)
+    return (10**role_position)
+}
+
+/**
+ * returns the se and pe bonus as an list
+ * @param gameSave the save file of the user
+ * @returns a number list of [soul bounus, prop bonus]
+ */
+function get_se_pe_bonus(gameSave) : number[] {
+    return [gameSave.soul_bonus, gameSave.prop_bonus]
+}

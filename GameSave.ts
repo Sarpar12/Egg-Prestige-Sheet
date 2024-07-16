@@ -56,7 +56,28 @@ class GameSave {
      * @returns ER as JSON
      */
     // @ts-expect-error: game exists within the output, however ts doesn't know this
-    get ER(): JSON { return this.save.game.epicResearchList }
+    get ER() { return this.save.game.epicResearchList }
+
+    /**
+     * gets the soul bonus epic research amount
+     * 
+     * @returns the soul bonus ER levels
+     */
+    get soul_bonus() : number { 
+        let soulER = this.ER.find(research => research.id === "soul_eggs")
+        // If no item is found, then assume that there is 0 ER
+        return soulER ? soulER.level : 0   
+    }
+
+    /**
+     * returns the prop bonus ER level
+     * 
+     * @returns prop bonus ER level
+     */
+    get prop_bonus() : number {
+        let propER = this.ER.find(research => research.id === "prophecy_bonus")
+        return propER ? propER.level : 0
+    }
 
     /**
      * Gets the path object of requested path
@@ -85,9 +106,7 @@ class GameSave {
      * @returns the eb of the save as number
      */
     calc_EB(): number {
-        let soulER = this.ER[15].level
-        let propER = this.ER[21].level
-        return (this.SE*(10+soulER))*(((1.05 + (0.01 * propER))**this.PE))
+        return (this.SE*(10+this.soul_bonus))*(((1.05 + (0.01 * this.prop_bonus))**this.PE))
     }
     
     /**
