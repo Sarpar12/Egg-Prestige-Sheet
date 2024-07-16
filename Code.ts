@@ -466,14 +466,14 @@ function set_calc_header() {
             .setBackground('#1565C0')
             .setFontWeight('bold')
             .setFontStyle('italic')
-            .setFontColor('black')
+            .setFontColor('white')
     }
 
     // Setting up the actual headers
     // PE required | Se Required x3
     let headers = ["PE Required", "SE Required"]
     headers = Array(3).fill(headers).flat()
-    sheet.getRange("C2:H2").setValues(headers)
+    sheet.getRange("C2:H2").setValues([headers])
         .setHorizontalAlignment('center')
         .setBackground('#E3F2FD')
         .setFontWeight('bold')
