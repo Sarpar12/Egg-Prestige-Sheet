@@ -245,7 +245,7 @@ function sheet_fill(data: any[]) {
     }
     data[0].push("")
     sheet.getRange(sheet.getLastRow() + 1, 1, 1, data[0].length).setValues(data)
-    sheet.getRange(sheet.getLastRow(), 1, 1, data[0].length).setHorizontalAlignment('left')
+        .setHorizontalAlignment('left')
     set_color(sheet, sheet.getLastRow(), 1, data[0])
     custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
     custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
@@ -263,10 +263,10 @@ function sheet_fill(data: any[]) {
 function set_color(sheet: Sheet, row: number, col: number, data: any[]) {
     if (row % 2 == 0) {
         sheet.getRange(row, col, 1, data.length).setBackground('#696969')
-        sheet.getRange(row, col, 1, data.length).setFontColor('white')
+            .setFontColor('white')
     } else {
         sheet.getRange(row, col, 1, data.length).setBackground('#DCDCDC')
-        sheet.getRange(row, col, 1, data.length).setFontColor('black')
+            .setFontColor('black')
     }
 }
 
@@ -282,10 +282,10 @@ function set_sheet_header() {
     let sheet: Sheet = get_sheet("Prestige Data")
     let str_arr: string[] = "EB, SE, PE, Prestige #, Date Pulled, MER, JER, Notes".split(", ")
     sheet.getRange(1, 1, 1, str_arr.length).setValues([str_arr])
-    sheet.getRange(1, 1, 1, str_arr.length).setHorizontalAlignment("center");
-    sheet.getRange(1, 1, 1, str_arr.length).setBackground('#3cdddc')
-    sheet.getRange(1, 1, 1, str_arr.length).setFontWeight("bold")
-    sheet.getRange(1, 1, 1, str_arr.length).setFontStyle("italic")
+        .setHorizontalAlignment("center")
+        .setBackground('#3cdddc')
+        .setFontWeight("bold")
+        .setFontStyle("italic")
 
     // Sheet Manipulation
     sheet.setHiddenGridlines(true) // hides the gridlines
@@ -424,6 +424,5 @@ function link_latest() {
 
     // This section adds it to the sheet itself at an fixed postion
     // Values will most likely be fixed
-    spreadsheet.getRange(2, 10, 1).setValue(jump_url)
-    spreadsheet.getRange(2, 10, 1).setBackground('#DCDCDC')
+    spreadsheet.getRange(2, 10, 1).setValue(jump_url).setBackground('#DCDCDC')
 }
