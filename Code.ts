@@ -82,7 +82,16 @@ function onEdit(e) {
         update_MER_wrapper()
     }
     if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
+        if (range.getValue() == "") {
+            return
+        }
         update_EB_wrapper()
+    }
+    if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B3") {
+        if (range.getValue() == "") {
+            return
+        }
+        update_JER_wrapper()
     }
 }
 
@@ -599,4 +608,28 @@ function update_EB_wrapper() {
         sheet.getRange(`C${3+i}:D${3+i}`).setValues([values])
     }
     custom_number_wrapper(true, 3, 2+data_length, 4, 4, "Calculations")
+}
+
+/**
+ * updates the MER displayed in the sheet\
+ * pulls information from Prestige Data sheet
+ */
+function update_JER_wrapper() {
+    // Initial Getting
+    let sheet = get_sheet('Calculations')
+    let prestige_sheet = get_sheet("Prestige Data")
+    let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
+    let target_mer = sheet.getRange("B3").getValue()
+    let jer_combos = calculate_combos_for_target_jer(target_mer, sepe[0][1], sepe[0][0])
+    
+    // Reset Previous Data
+    reset_sheet_column(7,5, "Calculations")
+
+    // Parsing the response
+    let data_length = jer_combos.length
+    for (let i = 0; i < data_length; i++) {
+        let values = [jer_combos[i].pe, jer_combos[i].se]
+        sheet.getRange(`E${3+i}:F${3+i}`).setValues([values])
+    }
+    custom_number_wrapper(true, 3, 2+data_length, 6, 6, "Calculations")
 }

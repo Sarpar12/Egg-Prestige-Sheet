@@ -184,3 +184,132 @@ function calculate_SE_EB_target_combos(target_eb : number, current_se : number, 
 
     return player_combo
 }
+
+// Anything after this is for solving JER
+// It's more complicated
+
+/**
+ * JER's formula can be rearranged as a cubic equation in log(SE),
+ * so we can use the cubic formula to solve it.
+ * 
+ * We need to take care to analyse the roots, since for cubic equations
+ * there can be more than one, and we need to pick the one that makes sense. (i.e., positive)
+ * The solver function only returns real roots, so no need to check for complex ones.
+ * 
+ * @param jer the targetted jer
+ * @param pe the number of pe
+ */
+function calculate_se_for_target_jER(jer : number, pe : number) {
+    const roots = solve_cubic_equation(
+        0.1519,
+        -4.8517,
+        48.248,
+        -((jer * (pe + 100)) / 100 + 94.46)
+    );
+
+    if (!roots.length) 
+        // shouldn't happen, but we'll throw a fit just in case
+        throw new Error('a cubic equation should have at least one real root ' + jer + ' ' + pe);
+
+    // pick the biggest positive root
+    // @ts-expect-error
+    const logSE = roots.sort().findLast(r => r > 0);
+    if (logSE == undefined)
+        // only negative roots, which means there's no viable SE for that target JER / PE.
+        return null;
+
+    // the SE value needed would exceed viable SE counts
+    if (logSE >= ALL_ROLES.length)
+        return null;
+
+    const se = Math.pow(10, logSE);
+    return se;
+}
+
+/**
+ * finds all possible ways to get that jer
+ * @param target_jer the target jer
+ * @param current_pe current pe of player
+ * @param current_se current se of player 
+ * @returns list of comboes
+ */
+function calculate_combos_for_target_jer(target_jer : number, current_pe : number, current_se : number) {
+    const combos = [];
+    
+    for (let new_pe = 0; new_pe <= 5; new_pe += 1) {
+        const se_needed = calculate_se_for_target_jER(target_jer, current_pe + new_pe);
+        if (se_needed == null)
+            break;
+        
+        combos.push({
+            pe: new_pe,
+            se: Math.max(se_needed - current_se, 0)
+        });
+    }
+
+    return combos;
+}
+
+
+/**
+ * Returns the real roots of a cubic equation of the form:
+ * a*x^3 + b*x^2 + c*x + d = 0
+ * 
+ * using the Cardano method which is an analytical solution.
+ * adapted from https://gist.github.com/weepy/6009631
+ * @param a the a in the cubic equation
+ * @param b the b in the cubic equation
+ * @param c the c in the cubic equation
+ * @param d the d in the cubic equation
+ */
+function solve_cubic_equation(a : number, b : number, c : number, d : number) : number[] {
+    if (a == 0)
+        throw new Error('not a cubic equation');
+
+    b /= a;
+    c /= a;
+    d /= a;
+  
+    let q, r, dum1, s, t, term1, r13;
+  
+    q = (3.0*c - (b*b))/9.0;
+    r = -(27.0*d) + b*(9.0*c - 2.0*(b*b));
+    r /= 54.0;
+  
+    const discriminant = q*q*q + r*r;
+    
+    const roots = [];
+    
+    term1 = (b/3.0);
+  
+    if (discriminant > 0) { // one root real, two are complex
+        s = r + Math.sqrt(discriminant);
+        s = ((s < 0) ? -Math.cbrt(-s) : Math.cbrt(s));
+        t = r - Math.sqrt(discriminant);
+        t = ((t < 0) ? -Math.cbrt(-t) : Math.cbrt(t));
+        
+        roots.push(-term1 + s + t);
+    }
+
+    // All roots real, at least two are equal.
+    else if (discriminant == 0) {
+        r13 = ((r < 0) ? -Math.cbrt(-r) : Math.cbrt(r));
+        
+        roots.push(-term1 + 2.0*r13);
+        roots.push(-(r13 + term1));
+    }
+  
+    // Only option left is that all roots are real and unequal (to get here, q < 0)
+    else {
+        q = -q;
+        dum1 = q*q*q;
+        dum1 = Math.acos(r/Math.sqrt(dum1));
+        r13 = 2.0*Math.sqrt(q);
+        
+        roots.push(-term1 + r13*Math.cos(dum1/3.0));
+        roots.push(-term1 + r13*Math.cos((dum1 + 2.0*Math.PI)/3.0))
+        roots.push(-term1 + r13*Math.cos((dum1 + 4.0*Math.PI)/3.0))
+    }
+    
+    return roots.sort();
+}
