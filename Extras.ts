@@ -62,6 +62,23 @@ function custom_number(is_se:boolean, row: number, col: number, sheet_name: stri
 }
 
 /**
+ * wrapper function for custom number, simply runs a loop
+ * @param is_se is the custom number for an se or eb
+ * @param start_row the starting row
+ * @param end_row the ending row
+ * @param start_col the starting column
+ * @param end_col the ending column
+ * @param sheet_name the name of the seet to set range for
+ */
+function custom_number_wrapper(is_se : boolean, start_row : number, end_row : number, start_col : number, end_col: number, sheet_name : string) {
+    for (let i = start_row; i <= end_row; i++) {
+        for (let j = start_col; j <= end_col; j++) {
+            custom_number(is_se, i, j, sheet_name)
+        }
+    }
+}
+
+/**
  * returns the value of Property  with the specified name, if it exists. 
  * See [this](https://developers.google.com/apps-script/reference/properties/) 
  * for what Properties are
@@ -84,4 +101,38 @@ function get_script_properties(key): string {
 function set_script_property(key, value): Properties {
     // @ts-expect-error: PropertiesService only exists in Google App Scripts
     return PropertiesService.getScriptProperties().setProperty(key, value)
+}
+
+/**
+ * creates a dropdown menu(basically a data validation)
+ * for a specific cell
+ * @param cell the cell to add the data validation too
+ * @param values the list of values to add to the dropdown menu
+ */
+function create_data_validation_dropdown(cell, values) {
+    // @ts-expect-error: SpreadsheetApp is only found online
+    let data_validation_rule = SpreadsheetApp.newDataValidation().requireValueInList(values).build()
+    cell.setDataValidation(data_validation_rule)
+}
+
+/**
+ * creates a data validation to make sure the input is a number
+ * @param cell the cell to create a data validation in
+ * @param value1 the lower value
+ * @param value2 the highe value(limit)
+ */
+function create_data_validation_numerical(cell, value1 : number, value2: number) {
+    // @ts-expect-error: SpreadsheetApp is only found online
+    let data_validation_rule = SpreadsheetApp.newDataValidation().requireNumberBetween(value1, value2).build()
+    cell.setDataValidation(data_validation_rule)
+}
+
+/**
+ * resets 2 columns, starting at a specified row
+ * @param column the column to reset
+ * @param start_row the starting row
+ */
+function reset_sheet_column(column : number, start_row : number, sheet_name : string) {
+    let sheet = get_sheet(sheet_name)
+    sheet.getRange(start_row, column, 999, 2).clear()
 }

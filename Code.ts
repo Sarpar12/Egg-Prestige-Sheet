@@ -51,9 +51,48 @@ function onOpen() {
             .addItem('Current Time Format', 'display_time_format'))
         .addSeparator()
         // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
+        .addSubMenu(SpreadsheetApp.getUi().createMenu('Calculations')
+            .addItem("Calculate PE/SE for EB%", "calc_pese_eb")
+            .addItem("Calculate PE/SE for MER", "calc_pese_mer")
+            .addItem("Calculate PE/SE for JER", "calc_pese_jer"))
+        .addSeparator()
+        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         .addSubMenu(SpreadsheetApp.getUi().createMenu('Extras')
-            .addItem("Format Gains", "format_gains"))
+            .addItem("Format Gains", "format_gains")
+            .addItem("TESTING: calc_header", "set_calc_header"))
         .addToUi();
+}
+
+/**
+ * currently updates selected eb to match the selected role
+ * @param e an event
+ */
+function onEdit(e) {
+    let range = e.range
+    if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
+        let sheet = get_sheet("Calculations")
+        let selectedRole = sheet.getRange("B1").getValue()
+        sheet.getRange("B2").setValue(role_to_EB(selectedRole))
+        custom_number(false, 2, 2, "Calculations")
+    }
+    if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B4") {
+        if (range.getValue() == "") {
+            return
+        }
+        update_MER_wrapper()
+    }
+    if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
+        if (range.getValue() == "") {
+            return
+        }
+        update_EB_wrapper()
+    }
+    if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B3") {
+        if (range.getValue() == "") {
+            return
+        }
+        update_JER_wrapper()
+    }
 }
 
 /**
@@ -212,10 +251,14 @@ function refresh_auto() {
 
 /**
  * conditional logic to check if the sheet can be filled in
- * @param dupe_enabled if the property DUPE_ENABLED ISis "true" 
+ * @param dupe_enabled if the property DUPE_ENABLED is "true" 
  */
 function fill_cells(dupe_enabled: boolean, automatic: boolean) {
     let save = new GameSave(get_script_properties('EID'))
+    // Setting soul and prop bonus er's here 
+    set_script_property('SE_ER', "" + save.soul_bonus)
+    set_script_property('PE_ER', "" + save.prop_bonus)
+
     let data = [get_data(save)]
     if (dupe_enabled) {
         sheet_fill(data)
@@ -250,6 +293,7 @@ function sheet_fill(data: any[]) {
     custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
     custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
     link_latest()
+    // TODO: when MER/JER/EB wrappers are finished, call them here
 }
 
 /**
@@ -424,5 +468,168 @@ function link_latest() {
 
     // This section adds it to the sheet itself at an fixed postion
     // Values will most likely be fixed
-    spreadsheet.getRange(2, 10, 1).setValue(jump_url).setBackground('#DCDCDC')
+    spreadsheet.getRange(2, 10, 1).setValue(jump_url).setBackground('#DCDCDC').setFontWeight('bold')
+}
+
+///////////////////////////
+//////
+////// Code After this Point is
+////// for calculations only
+//////
+///////////////////////////
+
+/**
+ *  Sets the header row for 
+ */
+function set_calc_header() {
+    let sheet = get_sheet("Calculations")
+    // Create a 1x3 area(vertical)
+    let select_vars : [[string], [string], [string], [string]] = [["Selected Role:"], ["Selected EB"], ["Selected JER:"], ["Selected MER:"]]
+    // (Starting row, starting column, row number, col number)
+    // DO NOT USE: (1, 2), (2, 2), "(3, 2)
+    sheet.getRange(1, 1, 4, 1).setValues(select_vars)
+        .setBackground('#F1EE8E')
+        .setFontColor('black')
+        .setFontWeight('bold')
+
+    // Setting up "header" rows, as in the rows about the actual header
+    let header : string[] = ["EB%", "JER", "MER"]
+    let rangeArray = []
+    rangeArray.push(sheet.getRange("C1:D1").merge())
+    rangeArray.push(sheet.getRange("E1:F1").merge())
+    rangeArray.push(sheet.getRange("G1:H1").merge())
+    for (let i = 0; i < rangeArray.length; i++) {
+        rangeArray[i].setValue(header[i]).setHorizontalAlignment('center')
+            .setBackground('#1565C0')
+            .setFontWeight('bold')
+            .setFontStyle('italic')
+            .setFontColor('white')
+    }
+
+    // Setting up the actual headers
+    // PE required | Se Required x3
+    let headers : string[] = ["PE Required", "SE Required"]
+    headers = Array(3).fill(headers).flat()
+    sheet.getRange("C2:H2").setValues([headers])
+        .setHorizontalAlignment('center')
+        .setBackground('#E3F2FD')
+        .setFontWeight('bold')
+
+    // Setting up the "current value" headers
+    sheet.getRange("A5:B5").merge().setBackground('#000000') // separator
+    let current_headers : string[] = ["Current Role", "Current EB", "Current JER", "Current MER"]
+    let current_values : any[] = get_current_values()
+    let combined_list = current_headers.map((item, index) => [item, current_values[index]])
+    sheet.getRange("A6:B9").setValues(combined_list)
+    custom_number(false, 7, 2, "Calculations") // Display EB with custom number
+
+    // Setting up remaing things
+    create_role_dropdown()
+    create_dv_jer_mer()
+}
+
+/**
+ * creates the role dropdown, if no data validation rule exists for that cell
+ */
+function create_role_dropdown() {
+    let role_list : string[] = ALL_ROLES.slice(0, -1) // Remove infinifarmer from the list
+    let cell = get_sheet("Calculations").getRange("B1")
+    if (cell.getDataValidation() != null) {
+        return
+    }
+    create_data_validation_dropdown(cell, role_list)
+}
+
+/**
+ * creates data validation rules for JER and MER input cells
+ */
+function create_dv_jer_mer() {
+    let sheet = get_sheet("Calculations")
+    let mer_cell = sheet.getRange("B3")
+    let jer_cell = sheet.getRange("B4")
+    create_data_validation_numerical(mer_cell, 1, 100)
+    create_data_validation_numerical(jer_cell, 1, 200)
+}
+
+/**
+ * gets the current values for Role, eb, JER, and MER
+ * @returns [string, number, number, number], the current role, eb, jer, mer, values
+ */
+function get_current_values() : any[] {
+    let save = new GameSave(get_script_properties("EID"))
+    return [EB_to_role(save.EB), save.EB, save.JER, save.MER]
+}
+
+/**
+ * updates the MER displayed in the sheet\
+ * pulls information from Prestige Data sheet
+ */
+function update_MER_wrapper() {
+    // Initial Getting
+    let sheet = get_sheet('Calculations')
+    let prestige_sheet = get_sheet("Prestige Data")
+    let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
+    let target_mer = sheet.getRange("B4").getValue()
+    let mer_combos = calculate_sepe_target_MER(target_mer, sepe[0][1], sepe[0][0])
+    
+    // Reset Previous Data
+    reset_sheet_column(7,3, "Calculations")
+
+    // Parsing the response
+    let data_length = mer_combos.length
+    for (let i = 0; i < data_length; i++) {
+        let values = [mer_combos[i].pe, mer_combos[i].se]
+        sheet.getRange(`G${3+i}:H${3+i}`).setValues([values])
+    }
+    custom_number_wrapper(true, 3, 2+data_length, 8, 8, "Calculations")
+}
+
+/**
+ * updates EB target information in the google sheets
+ */
+function update_EB_wrapper() {
+    // Initial Data Getting
+    let sheet = get_sheet('Calculations')
+    let prestige_sheet = get_sheet('Prestige Data')
+
+    // Data Setup
+    let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
+    let sepe_bonus = [parseInt(get_script_properties('SE_ER')), parseInt(get_script_properties('PE_ER'))]
+    let target_EB : number = role_to_EB(sheet.getRange("B1").getValue())
+    let combos = calculate_SE_EB_target_combos(target_EB, sepe[0][0], sepe[0][1], sepe_bonus[0], sepe_bonus[1])
+
+    // Clear previous data
+    reset_sheet_column(3, 3, "Calculations")
+
+    // Fill data into sheet
+    let data_length = combos.length
+    for (let i = 0; i < data_length; i++) {
+        let values = [combos[i].pe, combos[i].se]
+        sheet.getRange(`C${3+i}:D${3+i}`).setValues([values])
+    }
+    custom_number_wrapper(true, 3, 2+data_length, 4, 4, "Calculations")
+}
+
+/**
+ * updates the MER displayed in the sheet\
+ * pulls information from Prestige Data sheet
+ */
+function update_JER_wrapper() {
+    // Initial Getting
+    let sheet = get_sheet('Calculations')
+    let prestige_sheet = get_sheet("Prestige Data")
+    let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
+    let target_mer = sheet.getRange("B3").getValue()
+    let jer_combos = calculate_combos_for_target_jer(target_mer, sepe[0][1], sepe[0][0])
+    
+    // Reset Previous Data
+    reset_sheet_column(7,5, "Calculations")
+
+    // Parsing the response
+    let data_length = jer_combos.length
+    for (let i = 0; i < data_length; i++) {
+        let values = [jer_combos[i].pe, jer_combos[i].se]
+        sheet.getRange(`E${3+i}:F${3+i}`).setValues([values])
+    }
+    custom_number_wrapper(true, 3, 2+data_length, 6, 6, "Calculations")
 }
