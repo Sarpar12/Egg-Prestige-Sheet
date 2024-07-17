@@ -4,11 +4,8 @@
  * @param sheet_name the name of the sheet to get
  * @returns a Sheet object, see [this](https://developers.google.com/apps-script/reference/spreadsheet/sheet)
  */
-// @ts-expect-error: Sheet only exists within google app scripts 
-function get_sheet(sheet_name: string): Sheet {
-    // @ts-expect-error: SpreadsheetApp only exists within google app scripts 
+function get_sheet(sheet_name: string): GoogleAppsScript.Spreadsheet.Sheet {
     return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheet_name);
-    // return SpreadsheetApp.getActiveSpreadSheet().getSheetByName(sheet_name)
 }
 
 
@@ -17,7 +14,6 @@ function get_sheet(sheet_name: string): Sheet {
  * `SpreadsheetApp.getUi().alert()`
  */
 function alert(input: string) {
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
     SpreadsheetApp.getUi().alert(input)
 }
 
@@ -47,11 +43,10 @@ function custom_number(is_se:boolean, row: number, col: number, sheet_name: stri
     ]);
     let string_postfix: string = "";
     if (!is_se) { string_postfix = "%"}
-    // @ts-expect-error: Sheet only exists within google app scripts 
-    let sheet: Sheet = get_sheet(sheet_name)
+    let sheet: GoogleAppsScript.Spreadsheet.Sheet = get_sheet(sheet_name)
     // toExponential() returns as string object
-    let number: String = sheet.getRange(row, col).getValue().toExponential()
-    let ending: String = number.slice(number.search(/[E]/i)+2, number.length)
+    let number: string = sheet.getRange(row, col).getValue().toExponential()
+    let ending: string = number.slice(number.search(/[E]/i)+2, number.length)
     let div_ending = parseInt(ending.valueOf()) - parseInt(ending.valueOf()) % 3
     if (abbreviations.has(`+${div_ending}`)) {
         var str_format = `[>=1E+${div_ending}]0.000${",".repeat(div_ending/3)}"${abbreviations.get(`+${div_ending}`)}${string_postfix}";`
@@ -86,8 +81,7 @@ function custom_number_wrapper(is_se : boolean, start_row : number, end_row : nu
  * @param key the key of the property(name)
  * @returns the value of that specified property
  */
-function get_script_properties(key): string {
-    // @ts-expect-error: PropertiesService only exists in Google App Scripts
+function get_script_properties(key : string): string {
     return PropertiesService.getScriptProperties().getProperty(key)
 }
     
@@ -97,9 +91,7 @@ function get_script_properties(key): string {
  * @param value the new value of the property
  * @returns the [Properties](https://developers.google.com/apps-script/reference/properties/properties#setProperty(String,String)) that was just modified
  */
-// @ts-expect-error: Properties only exists within google app scripts
-function set_script_property(key, value): Properties {
-    // @ts-expect-error: PropertiesService only exists in Google App Scripts
+function set_script_property(key : string, value : string): GoogleAppsScript.Properties.Properties {
     return PropertiesService.getScriptProperties().setProperty(key, value)
 }
 
@@ -109,8 +101,7 @@ function set_script_property(key, value): Properties {
  * @param cell the cell to add the data validation too
  * @param values the list of values to add to the dropdown menu
  */
-function create_data_validation_dropdown(cell, values) {
-    // @ts-expect-error: SpreadsheetApp is only found online
+function create_data_validation_dropdown(cell : GoogleAppsScript.Spreadsheet.Range, values : any[])  {
     let data_validation_rule = SpreadsheetApp.newDataValidation().requireValueInList(values).build()
     cell.setDataValidation(data_validation_rule)
 }
@@ -121,8 +112,7 @@ function create_data_validation_dropdown(cell, values) {
  * @param value1 the lower value
  * @param value2 the highe value(limit)
  */
-function create_data_validation_numerical(cell, value1 : number, value2: number) {
-    // @ts-expect-error: SpreadsheetApp is only found online
+function create_data_validation_numerical(cell : GoogleAppsScript.Spreadsheet.Range, value1 : number, value2: number) {
     let data_validation_rule = SpreadsheetApp.newDataValidation().requireNumberBetween(value1, value2).build()
     cell.setDataValidation(data_validation_rule)
 }

@@ -115,7 +115,7 @@ function calculate_se_target_MER(target_mer : number, pe : number) : number {
  * @returns a list of combinations for the targetted mer
  */
 function calculate_sepe_target_MER(target_mer : number, current_pe : number, current_se : number) {
-    const combos = [];
+    const combos : {pe : number, se :number}[] = [];
     
     for (let new_pe = 0; new_pe <= 5; new_pe += 1) {
         const se_needed = calculate_se_target_MER(target_mer, current_pe + new_pe);
@@ -188,7 +188,7 @@ function calculate_SE_EB_target_combos(target_eb : number, current_se : number, 
 // Anything after this is for solving JER
 // It's more complicated
 
-function calc_JER(pe, se) {
+function calc_JER(pe : number, se : number) : number {
     const logSE = Math.log10(se);
     return (((0.1519 * Math.pow(logSE, 3) - 4.8517 * Math.pow(logSE, 2) + 48.248 * logSE - 143.46) / pe)*100*pe+100*49) / (pe + 100);
 }
@@ -239,7 +239,7 @@ function calculate_se_for_target_jER(jer : number, pe : number) {
  * @returns list of comboes
  */
 function calculate_combos_for_target_jer(target_jer : number, current_pe : number, current_se : number) {
-    const combos = [];
+    const combos : {pe : number, se : number}[] = [];
     
     for (let new_pe = 0; new_pe <= 5; new_pe += 1) {
         const se_needed = calculate_se_for_target_jER(target_jer, current_pe + new_pe);

@@ -9,6 +9,7 @@
   "author": "Ashton Dong",
   "license": "ISC",
   "devDependencies": {
+    "@types/google-apps-script": "^1.0.83",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   }

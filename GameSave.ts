@@ -7,7 +7,6 @@ class GameSave {
      * @param EID the EID of the current user of this script
      */
     constructor (EID: string) {
-        // @ts-ignore - UrlFetchApp only exists within google app scripts
         this.save = JSON.parse(UrlFetchApp.fetch(`https://ei_worker.tylertms.workers.dev/backup?EID=${EID}`).getContentText())
     }
 
@@ -16,7 +15,7 @@ class GameSave {
      * 
      * @returns JSON save file
      */
-    get gamesave(): JSON {return this.save}
+    get gamesave(): any {return this.save}
 
     /**
      * Returns the se of the save

@@ -21,28 +21,23 @@
  * the corresponding function in the 2nd parameter
  */
 function onOpen() {
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
     const ui = SpreadsheetApp.getUi();
     ui.createMenu('Data Fetching')
         .addItem("Refresh", "refresh_data")
         .addSeparator()
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         .addSubMenu(SpreadsheetApp.getUi().createMenu('Automatic Updates')
             .addItem('Enable Automatic Updates', 'create_auto_trigger')
             .addItem(`Disable Automatic Updates`, 'remove_trigger')
             .addItem("Automatic Update Info", 'automatic_trigger_info'))
         .addSeparator()
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         .addSubMenu(SpreadsheetApp.getUi().createMenu('Duplicate Entries')
             .addItem('Toggle Duplicate Entries', 'toggle_duplicates')
             .addItem(`Get Duplicate Status`, 'dupe_status'))
         .addSeparator()
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         .addSubMenu(SpreadsheetApp.getUi().createMenu('EID stuff')
             .addItem('Set EID', 'setEID')
             .addItem('Show EID currently saved', 'showEID'))
         .addSeparator()
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         .addSubMenu(SpreadsheetApp.getUi().createMenu('Time Format')
             .addItem('MM-dd-yyyy HH:mm:ss', 'set_time_wrapper_2')
             .addItem('MM-dd-yyyy', 'set_time_wrapper_1')
@@ -50,7 +45,6 @@ function onOpen() {
             .addItem('dd-MM-yyyy', 'set_time_wrapper_3')
             .addItem('Current Time Format', 'display_time_format'))
         .addSeparator()
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
         .addSubMenu(SpreadsheetApp.getUi().createMenu('Calculations')
             .addItem("Calculate PE/SE for EB%", "calc_pese_eb")
             .addItem("Calculate PE/SE for MER", "calc_pese_mer")
@@ -62,7 +56,7 @@ function onOpen() {
  * currently updates selected eb to match the selected role
  * @param e an event
  */
-function onEdit(e) {
+function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
     let range = e.range
     if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
         let sheet = get_sheet("Calculations")
@@ -122,7 +116,6 @@ function format_gains() {
  * and nothing will happen. 
  */
 function create_auto_trigger() {
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
     let response = Math.round(parseFloat(SpreadsheetApp.getUi().prompt("Please enter the duration between each update(in hours): ").getResponseText()))
     if (!response || response == 0) {
         alert("Not a valid input!")
@@ -130,7 +123,6 @@ function create_auto_trigger() {
     else {
         set_script_property("TRIGGER_TIME", `${response}`)
         if ((get_script_properties("TRIGGER_SET")) === "false" || !(get_script_properties("TRIGGER_SET"))) {
-            // @ts-expect-error: ScriptApp only exists in Google App Scripts
             ScriptApp.newTrigger('refresh_auto').timeBased().everyHours(response).create()
             set_script_property("TRIGGER_SET", "true")
             alert(`The sheet will update every ${get_script_properties("TRIGGER_TIME")} hours.`);
@@ -148,7 +140,6 @@ function remove_trigger() {
     if ((get_script_properties("TRIGGER_SET") === "false") || !(get_script_properties("TRIGGER_SET"))) {
         alert("No Trigger has been set!")
     } else {
-        // @ts-expect-error: ScriptApp only exists in Google App Scripts
         ScriptApp.deleteTrigger(ScriptApp.getProjectTriggers()[0])
         set_script_property("TRIGGER_SET", "false")
         alert(`The trigger that runs every ${get_script_properties("TRIGGER_TIME")} hours was removed.`);
@@ -173,7 +164,6 @@ function automatic_trigger_info() {
  */
 function setEID() {
     var regex = /^EI\d{16}$/; // Regular expression for the specified format
-    // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
     var EIDResponse = SpreadsheetApp.getUi().prompt('Please enter your EID:');
     var EID = EIDResponse.getResponseText(); // Extract the text entered by the user
 
@@ -210,8 +200,7 @@ function get_data(save : GameSave) {
  * @param timestamp unix timestamp
  * @returns timestamp in the form of "MM-dd-yyyy HH:mm:ss"
  */
-function convert_time(timestamp) {
-    // @ts-expect-error: Utilities only exists in Google App Scripts
+function convert_time(timestamp : number) {
     return Utilities.formatDate(new Date(timestamp * 1000), get_tz(), get_time_format());
 }
 
@@ -221,7 +210,6 @@ function convert_time(timestamp) {
  * @returns the timezone of the Sheet as a string
  */
 function get_tz(): string {
-    // @ts-expect-error: SpreadsheetApp only exists on google sheets
     return SpreadsheetApp.getActive().getSpreadsheetTimeZone()
 }
 
@@ -313,8 +301,7 @@ function sheet_fill(data: any[]) {
  * @param y the column of the cell
  * @param data the array from get_data()
  */
-// @ts-expect-error: Sheet only exists in Google Sheets
-function set_color(sheet: Sheet, row: number, col: number, data: any[]) {
+function set_color(sheet: GoogleAppsScript.Spreadsheet.Sheet, row: number, col: number, data: any[]) {
     if (row % 2 == 0) {
         sheet.getRange(row, col, 1, data.length).setBackground('#696969')
             .setFontColor('white')
@@ -332,8 +319,7 @@ function set_color(sheet: Sheet, row: number, col: number, data: any[]) {
  * @precondition the first row of the sheet must be empty
  */
 function set_sheet_header() {
-    // @ts-expect-error: Sheet only exists within Google Sheets
-    let sheet: Sheet = get_sheet("Prestige Data")
+    let sheet: GoogleAppsScript.Spreadsheet.Sheet = get_sheet("Prestige Data")
     let str_arr: string[] = "EB, SE, PE, Prestige #, Date Pulled, MER, JER, Notes".split(", ")
     sheet.getRange(1, 1, 1, str_arr.length).setValues([str_arr])
         .setHorizontalAlignment("center")
@@ -354,7 +340,6 @@ function set_update_time() {
     if (old_time.slice(0, 3) === "dd") {
         set_time_wrapper_4()
     }
-    // @ts-expect-error: Utilities only exists in Google App Scripts
     set_script_property("LAST_UPDATED", `${Utilities.formatDate(new Date(), get_tz(), get_time_format())}`)
     set_script_property("TIME_FORMAT", old_time)
 }
@@ -494,7 +479,7 @@ function link_latest() {
 function set_calc_header() {
     let sheet = get_sheet("Calculations")
     // Create a 1x3 area(vertical)
-    let select_vars : [[string], [string], [string], [string]] = [["Selected Role:"], ["Selected EB"], ["Selected JER:"], ["Selected MER:"]]
+    let select_vars : string[][] = [["Selected Role:"], ["Selected EB"], ["Selected JER:"], ["Selected MER:"]]
     // (Starting row, starting column, row number, col number)
     // DO NOT USE: (1, 2), (2, 2), "(3, 2)
     sheet.getRange(1, 1, 4, 1).setValues(select_vars)
@@ -541,7 +526,7 @@ function set_calc_header() {
 /**
  * updates the current values shown in the sheet
  */
-function update_current_values(data) {
+function update_current_values(data : any[]) {
     let sheet = get_sheet("Calculations")
     let range = sheet.getRange("B6:B9")
     let current_values = [[EB_to_role(data[0])], [data[0]], [calc_mer(data[2], data[1])], [calc_JER(data[2], data[1])]]
@@ -553,7 +538,7 @@ function update_current_values(data) {
 /**
  * creates the role dropdown, if no data validation rule exists for that cell
  */
-function create_role_dropdown(data : any[]) {
+function create_role_dropdown(data : (string)[]) {
     let role_list : string[] = ALL_ROLES.slice(ALL_ROLES.indexOf(data[0]) + 1, -1) // Remove infinifarmer from the list
     let cell = get_sheet("Calculations").getRange("B1")
     create_data_validation_dropdown(cell, role_list)
@@ -574,7 +559,7 @@ function create_dv_jer_mer() {
  * gets the current values for Role, eb, JER, and MER
  * @returns [string, number, number, number], the current role, eb, jer, mer, values
  */
-function get_current_values() : any[] {
+function get_current_values() : (string | number)[] {
     let save = new GameSave(get_script_properties("EID"))
     return [EB_to_role(save.EB), save.EB, save.JER, save.MER]
 }
@@ -615,7 +600,7 @@ function update_EB_wrapper() {
     let prestige_sheet = get_sheet('Prestige Data')
 
     // Data Setup
-    if (sheet.getRange("B1") === "") {
+    if (sheet.getRange("B1").getValue() === "") {
         return
     }
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
