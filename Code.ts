@@ -293,7 +293,12 @@ function sheet_fill(data: any[]) {
     custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
     custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
     link_latest()
-    // TODO: when MER/JER/EB wrappers are finished, call them here
+
+    // Updating values
+    update_EB_wrapper()
+    update_JER_wrapper()
+    update_MER_wrapper()
+    update_current_values(data[0])
 }
 
 /**
@@ -526,6 +531,18 @@ function set_calc_header() {
     // Setting up remaing things
     create_role_dropdown()
     create_dv_jer_mer()
+}
+
+/**
+ * updates the current values shown in the sheet
+ */
+function update_current_values(data) {
+    let sheet = get_sheet("Calculations")
+    let range = sheet.getRange("B6:B9")
+    let current_values = [[EB_to_role(data[0])], [data[0]], [calc_mer(data[2], data[1])], [calc_JER(data[2], data[1])]]
+
+    range.setValues(current_values)
+    custom_number(false, 7, 2, "Calculations") // Display EB with custom number
 }
 
 /**

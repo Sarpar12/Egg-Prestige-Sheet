@@ -188,6 +188,11 @@ function calculate_SE_EB_target_combos(target_eb : number, current_se : number, 
 // Anything after this is for solving JER
 // It's more complicated
 
+function calc_JER(pe, se) {
+    const logSE = Math.log10(se);
+    return (((0.1519 * Math.pow(logSE, 3) - 4.8517 * Math.pow(logSE, 2) + 48.248 * logSE - 143.46) / pe)*100*pe+100*49) / (pe + 100);
+}
+
 /**
  * JER's formula can be rearranged as a cubic equation in log(SE),
  * so we can use the cubic formula to solve it.
