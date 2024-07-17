@@ -126,3 +126,13 @@ function create_data_validation_numerical(cell, value1 : number, value2: number)
     let data_validation_rule = SpreadsheetApp.newDataValidation().requireNumberBetween(value1, value2).build()
     cell.setDataValidation(data_validation_rule)
 }
+
+/**
+ * resets 2 columns, starting at a specified row
+ * @param column the column to reset
+ * @param start_row the starting row
+ */
+function reset_sheet_column(column : number, start_row : number, sheet_name : string) {
+    let sheet = get_sheet(sheet_name)
+    sheet.getRange(start_row, column, 999, 2).clear()
+}

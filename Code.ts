@@ -562,6 +562,10 @@ function update_MER_wrapper() {
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let target_mer = sheet.getRange("B4").getValue()
     let mer_combos = calculate_sepe_target_MER(target_mer, sepe[0][1], sepe[0][0])
+    
+    // Reset Previous Data
+    reset_sheet_column(7,3, "Calculations")
+
     // Parsing the response
     let data_length = mer_combos.length
     for (let i = 0; i < data_length; i++) {
@@ -585,11 +589,14 @@ function update_EB_wrapper() {
     let target_EB : number = role_to_EB(sheet.getRange("B1").getValue())
     let combos = calculate_SE_EB_target_combos(target_EB, sepe[0][0], sepe[0][1], sepe_bonus[0], sepe_bonus[1])
 
+    // Clear previous data
+    reset_sheet_column(3, 3, "Calculations")
+
     // Fill data into sheet
     let data_length = combos.length
     for (let i = 0; i < data_length; i++) {
         let values = [combos[i].pe, combos[i].se]
         sheet.getRange(`C${3+i}:D${3+i}`).setValues([values])
     }
-    custom_number_wrapper(true, 3, 2+data_length, 6, 6, "Calculations")
+    custom_number_wrapper(true, 3, 2+data_length, 4, 4, "Calculations")
 }
