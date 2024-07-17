@@ -303,6 +303,7 @@ function sheet_fill(data: any[]) {
     update_JER_wrapper()
     update_MER_wrapper()
     update_current_values(data[0])
+    create_role_dropdown([EB_to_role(data[0][0])])
 }
 
 /**
@@ -533,7 +534,7 @@ function set_calc_header() {
     custom_number(false, 7, 2, "Calculations") // Display EB with custom number
 
     // Setting up remaing things
-    create_role_dropdown()
+    create_role_dropdown(current_values)
     create_dv_jer_mer()
 }
 
@@ -552,12 +553,9 @@ function update_current_values(data) {
 /**
  * creates the role dropdown, if no data validation rule exists for that cell
  */
-function create_role_dropdown() {
-    let role_list : string[] = ALL_ROLES.slice(0, -1) // Remove infinifarmer from the list
+function create_role_dropdown(data : any[]) {
+    let role_list : string[] = ALL_ROLES.slice(ALL_ROLES.indexOf(data[0]) + 1, -1) // Remove infinifarmer from the list
     let cell = get_sheet("Calculations").getRange("B1")
-    if (cell.getDataValidation() != null) {
-        return
-    }
     create_data_validation_dropdown(cell, role_list)
 }
 
