@@ -55,11 +55,6 @@ function onOpen() {
             .addItem("Calculate PE/SE for EB%", "calc_pese_eb")
             .addItem("Calculate PE/SE for MER", "calc_pese_mer")
             .addItem("Calculate PE/SE for JER", "calc_pese_jer"))
-        .addSeparator()
-        // @ts-expect-error: SpreadsheetApp only exists in Google Sheets
-        .addSubMenu(SpreadsheetApp.getUi().createMenu('Extras')
-            .addItem("Format Gains", "format_gains")
-            .addItem("TESTING: calc_header", "set_calc_header"))
         .addToUi();
 }
 
@@ -238,7 +233,12 @@ function refresh_data() {
     if (!get_script_properties('EID')) {
         setEID()
     }
-    fill_cells(get_script_properties("DUPE_ENABLED") === "true", false)
+    let default_dupe = get_script_properties("DUPE_ENABLED")
+    let dupe_bool = true
+    if (default_dupe != "true" && default_dupe != null) {
+        dupe_bool = false
+    }
+    fill_cells(dupe_bool, false)
 }
 
 /**
@@ -283,8 +283,12 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) {
  */
 function sheet_fill(data: any[]) {
     var sheet = get_sheet("Prestige Data");
+    let p_sheet = get_sheet('Calculations')
     if (sheet.getLastRow() === 0) {
         set_sheet_header()
+    }
+    if (p_sheet.getLastRow() === 0) {
+        set_calc_header()
     }
     data[0].push("")
     sheet.getRange(sheet.getLastRow() + 1, 1, 1, data[0].length).setValues(data)
@@ -584,6 +588,9 @@ function get_current_values() : any[] {
 function update_MER_wrapper() {
     // Initial Getting
     let sheet = get_sheet('Calculations')
+    if (sheet.getRange("B4").getValue() === "") {
+        return;
+    }
     let prestige_sheet = get_sheet("Prestige Data")
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let target_mer = sheet.getRange("B4").getValue()
@@ -610,6 +617,9 @@ function update_EB_wrapper() {
     let prestige_sheet = get_sheet('Prestige Data')
 
     // Data Setup
+    if (sheet.getRange("B1") === "") {
+        return
+    }
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let sepe_bonus = [parseInt(get_script_properties('SE_ER')), parseInt(get_script_properties('PE_ER'))]
     let target_EB : number = role_to_EB(sheet.getRange("B1").getValue())
@@ -635,6 +645,11 @@ function update_JER_wrapper() {
     // Initial Getting
     let sheet = get_sheet('Calculations')
     let prestige_sheet = get_sheet("Prestige Data")
+
+    // setup
+    if (sheet.getRange("B3").getValue() === "") {
+        return;
+    }
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let target_mer = sheet.getRange("B3").getValue()
     let jer_combos = calculate_combos_for_target_jer(target_mer, sepe[0][1], sepe[0][0])
