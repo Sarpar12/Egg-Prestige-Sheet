@@ -79,8 +79,10 @@ function onEdit(e) {
         if (range.getValue() == "") {
             return
         }
-        alert("MER Calculation in progress...")
         update_MER_wrapper()
+    }
+    if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
+        update_EB_wrapper()
     }
 }
 
@@ -244,6 +246,10 @@ function refresh_auto() {
  */
 function fill_cells(dupe_enabled: boolean, automatic: boolean) {
     let save = new GameSave(get_script_properties('EID'))
+    // Setting soul and prop bonus er's here 
+    set_script_property('SE_ER', "" + save.soul_bonus)
+    set_script_property('PE_ER', "" + save.prop_bonus)
+
     let data = [get_data(save)]
     if (dupe_enabled) {
         sheet_fill(data)
@@ -278,6 +284,7 @@ function sheet_fill(data: any[]) {
     custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
     custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
     link_latest()
+    // TODO: when MER/JER/EB wrappers are finished, call them here
 }
 
 /**
@@ -562,4 +569,27 @@ function update_MER_wrapper() {
         sheet.getRange(`G${3+i}:H${3+i}`).setValues([values])
     }
     custom_number_wrapper(true, 3, 2+data_length, 8, 8, "Calculations")
+}
+
+/**
+ * updates EB target information in the google sheets
+ */
+function update_EB_wrapper() {
+    // Initial Data Getting
+    let sheet = get_sheet('Calculations')
+    let prestige_sheet = get_sheet('Prestige Data')
+
+    // Data Setup
+    let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
+    let sepe_bonus = [parseInt(get_script_properties('SE_ER')), parseInt(get_script_properties('PE_ER'))]
+    let target_EB : number = role_to_EB(sheet.getRange("B1").getValue())
+    let combos = calculate_SE_EB_target_combos(target_EB, sepe[0][0], sepe[0][1], sepe_bonus[0], sepe_bonus[1])
+
+    // Fill data into sheet
+    let data_length = combos.length
+    for (let i = 0; i < data_length; i++) {
+        let values = [combos[i].pe, combos[i].se]
+        sheet.getRange(`C${3+i}:D${3+i}`).setValues([values])
+    }
+    custom_number_wrapper(true, 3, 2+data_length, 6, 6, "Calculations")
 }
