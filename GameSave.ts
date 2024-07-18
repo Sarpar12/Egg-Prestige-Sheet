@@ -63,7 +63,7 @@ class GameSave {
      * @returns the soul bonus ER levels
      */
     get soul_bonus() : number { 
-        let soulER = this.ER.find(research => research.id === "soul_eggs")
+        let soulER = this.ER.find((research : {id : string, level : number}) => research.id === "soul_eggs")
         // If no item is found, then assume that there is 0 ER
         return soulER ? soulER.level : 0   
     }
@@ -74,7 +74,7 @@ class GameSave {
      * @returns prop bonus ER level
      */
     get prop_bonus() : number {
-        let propER = this.ER.find(research => research.id === "prophecy_bonus")
+        let propER = this.ER.find((research : {id : string, level : number}) => research.id === "prophecy_bonus")
         return propER ? propER.level : 0
     }
 
@@ -83,9 +83,9 @@ class GameSave {
      * @param path path of the intended object in the JSON save
      * @returns JSON of the requested path if found, otherwise null
      */
-    get_path(path: string): JSON {
+    get_path(path: string): any {
         let paths = path.split(".")
-        let current_item = this.save
+        let current_item = this.gamesave
         for (var i = 0; i < paths.length; i++) {
             if (!current_item[paths[i]]) {
                 return null

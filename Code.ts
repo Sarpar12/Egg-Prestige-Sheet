@@ -44,11 +44,6 @@ function onOpen() {
             .addItem('dd-MM-yyyy HH:mm:ss', 'set_time_wrapper_4')
             .addItem('dd-MM-yyyy', 'set_time_wrapper_3')
             .addItem('Current Time Format', 'display_time_format'))
-        .addSeparator()
-        .addSubMenu(SpreadsheetApp.getUi().createMenu('Calculations')
-            .addItem("Calculate PE/SE for EB%", "calc_pese_eb")
-            .addItem("Calculate PE/SE for MER", "calc_pese_mer")
-            .addItem("Calculate PE/SE for JER", "calc_pese_jer"))
         .addToUi();
 }
 
@@ -82,28 +77,6 @@ function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
         }
         update_JER_wrapper()
     }
-}
-
-/**
- * Formats the gains found in the Calculations Sheet, 
- * currently formats SE gain, EB gain, EB and SE 
- * cells
- */
-function format_gains() {
-  var cell1: string[] = "true, 5, 7, Calculations".split(",")
-  var cell2: string[] = "false, 5, 9, Calculations".split(",")
-  var cell3: string[] = "false, 5, 6, Calculations".split(",")
-  var cell4: string[] = "true, 5, 4, Calculations".split(",")
-  for (var i = 0; i < cell1.length; i++) {
-    cell1[i] = cell1[i].trim()
-    cell2[i] = cell2[i].trim()
-    cell3[i] = cell3[i].trim()
-    cell4[i] = cell4[i].trim()
-  }
-  custom_number(cell1[0] === "true", parseInt(cell1[1]), parseInt(cell1[2]), cell1[3])
-  custom_number(cell2[0] === "true", parseInt(cell2[1]), parseInt(cell2[2]), cell2[3])
-  custom_number(cell3[0] === "true", parseInt(cell3[1]), parseInt(cell3[2]), cell3[3])
-  custom_number(cell4[0] === "true", parseInt(cell4[1]), parseInt(cell4[2]), cell4[3])
 }
 
 /**
@@ -241,7 +214,7 @@ function refresh_auto() {
  * conditional logic to check if the sheet can be filled in
  * @param dupe_enabled if the property DUPE_ENABLED is "true" 
  */
-function fill_cells(dupe_enabled: boolean, automatic: boolean) {
+function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
     let save = new GameSave(get_script_properties('EID'))
     // Setting soul and prop bonus er's here 
     set_script_property('SE_ER', "" + save.soul_bonus)
@@ -571,7 +544,7 @@ function get_current_values() : (string | number)[] {
 function update_MER_wrapper() {
     // Initial Getting
     let sheet = get_sheet('Calculations')
-    if (sheet.getRange("B4").getValue() === "") {
+    if (sheet.getRange("B4").getValue() === "" || sheet.getRange("B4").getValue() > 100) {
         return;
     }
     let prestige_sheet = get_sheet("Prestige Data")
@@ -580,7 +553,7 @@ function update_MER_wrapper() {
     let mer_combos = calculate_sepe_target_MER(target_mer, sepe[0][1], sepe[0][0])
     
     // Reset Previous Data
-    reset_sheet_column(7,3, "Calculations")
+    reset_sheet_column(7, 2, 3, 999, "Calculations")
 
     // Parsing the response
     let data_length = mer_combos.length
@@ -609,7 +582,7 @@ function update_EB_wrapper() {
     let combos = calculate_SE_EB_target_combos(target_EB, sepe[0][0], sepe[0][1], sepe_bonus[0], sepe_bonus[1])
 
     // Clear previous data
-    reset_sheet_column(3, 3, "Calculations")
+    reset_sheet_column(3, 2, 3, 999, "Calculations")
 
     // Fill data into sheet
     let data_length = combos.length
@@ -630,7 +603,7 @@ function update_JER_wrapper() {
     let prestige_sheet = get_sheet("Prestige Data")
 
     // setup
-    if (sheet.getRange("B3").getValue() === "") {
+    if (sheet.getRange("B3").getValue() === "" || sheet.getRange("B1").getValue() > 200) {
         return;
     }
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
@@ -638,7 +611,7 @@ function update_JER_wrapper() {
     let jer_combos = calculate_combos_for_target_jer(target_mer, sepe[0][1], sepe[0][0])
     
     // Reset Previous Data
-    reset_sheet_column(7,5, "Calculations")
+    reset_sheet_column(5, 2, 3, 999, "Calculations")
 
     // Parsing the response
     let data_length = jer_combos.length

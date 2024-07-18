@@ -122,7 +122,11 @@ function create_data_validation_numerical(cell : GoogleAppsScript.Spreadsheet.Ra
  * @param column the column to reset
  * @param start_row the starting row
  */
-function reset_sheet_column(column : number, start_row : number, sheet_name : string) {
+function reset_sheet_column(start_column : number, 
+                            col_number : number, 
+                            start_row : number, 
+                            row_number : number,
+                            sheet_name : string) {
     let sheet = get_sheet(sheet_name)
-    sheet.getRange(start_row, column, 999, 2).clear()
+    sheet.getRange(start_row, start_column, row_number, col_number).clear()
 }
