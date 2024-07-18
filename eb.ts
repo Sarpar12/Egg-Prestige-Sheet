@@ -275,7 +275,7 @@ function solve_cubic_equation(a : number, b : number, c : number, d : number) : 
     c /= a;
     d /= a;
   
-    let q, r, dum1, s, t, term1, r13;
+    let q : number, r, dum1, s, t, term1, r13;
   
     q = (3.0*c - (b*b))/9.0;
     r = -(27.0*d) + b*(9.0*c - 2.0*(b*b));
