@@ -491,9 +491,36 @@ function set_calc_header() {
     sheet.getRange("A6:B9").setValues(combined_list)
     custom_number(false, 7, 2, "Calculations") // Display EB with custom number
 
+    // Setting Up previous value headers
+    // Will be contained in it's own two function 
+    // so it doesn't run when sheet is being initialized
+    create_prev_header()
+
     // Setting up remaing things
     create_role_dropdown(current_values)
     create_dv_jer_mer()
+}
+
+/**
+ * creates header for "previously updated values"
+ */
+function create_prev_header() {
+    let sheet = get_sheet("Calculations")
+    sheet.getRange("A10:B10").merge().setBackground('#000000')
+    
+    let string_arr = ["Previous Role:", "Previous EB", "Previous JER", "Previous MER"]
+    sheet.getRange("A11:A14").setValues([string_arr]).setFontWeight('bold')
+
+    sheet.getRange("A15:B15").merge().setBackground('#000000')
+    let change_arr = ["Change in Role:", "Change in EB", "Change in JER", "Change in MER"]
+    sheet.getRange("A16:A19").setValues([change_arr]).setFontWeight('bold')
+}
+
+/**
+ * Actually sets the values of the previous header
+ */
+function set_prev_header_values() {
+
 }
 
 /**
