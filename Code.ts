@@ -263,6 +263,7 @@ function sheet_fill(data: any[]) {
     update_EB_wrapper()
     update_JER_wrapper()
     update_MER_wrapper()
+    set_prev_header_values(data[0])
     update_current_values(data[0])
     create_role_dropdown([EB_to_role(data[0][0])])
 }
@@ -491,9 +492,57 @@ function set_calc_header() {
     sheet.getRange("A6:B9").setValues(combined_list)
     custom_number(false, 7, 2, "Calculations") // Display EB with custom number
 
+    // Setting Up previous value headers
+    // Will be contained in it's own two function 
+    // so it doesn't run when sheet is being initialized
+    create_prev_header()
+
     // Setting up remaing things
     create_role_dropdown(current_values)
     create_dv_jer_mer()
+}
+
+/**
+ * creates header for "previously updated values"
+ */
+function create_prev_header() {
+    let sheet = get_sheet("Calculations")
+    sheet.getRange("A10:B10").merge().setBackground('#000000')
+    
+    let string_arr = [["Previous Role:"], ["Previous EB"], ["Previous JER"], ["Previous MER"]]
+    sheet.getRange("A11:A14").setValues(string_arr).setFontWeight('bold')
+
+    sheet.getRange("A15:B15").merge().setBackground('#000000')
+    let change_arr = [["Change in Role:"], ["Change in EB"], ["Change in JER"], ["Change in MER"], ["Prestige Amount"]]
+    sheet.getRange("A16:A20").setValues(change_arr).setFontWeight('bold')
+}
+
+/**
+ * Actually sets the values of the previous header
+ * @param data the data param from sheet_fill - [eb, se, pe, prestiges, time, mer, jer]
+ */
+function set_prev_header_values(data : any[]) {
+    let trimmed_data = [EB_to_role(data[0]), data[0], data[6], data[5], data[3]]
+    let sheet = get_sheet("Calculations")
+    let p_sheet = get_sheet("Prestige Data")
+    let prev_values : any[] = sheet.getRange("B6:B9").getValues()
+    prev_values.push([p_sheet.getRange(p_sheet.getLastRow() - 1, 4, 1, 1).getValue()])
+    let change_values : any[] = trimmed_data.map((value, index) => {
+        if (index === 0 && typeof value === 'string' && value === prev_values[0][index]) {
+            return [""];
+        }
+        if (index === 0 && typeof value === 'string' && value != prev_values[0][index]) {
+            return [value];
+        }
+        return [value - prev_values[index]];
+    });
+
+    // Setting the actual values
+    prev_values = prev_values.slice(0, -1)
+    sheet.getRange("B11:B14").setValues(prev_values)
+    custom_number(false, 12, 2, 'Calculations')
+    sheet.getRange("B16:B20").setValues(change_values)
+    custom_number(false, 17, 2, 'Calculations')
 }
 
 /**
@@ -502,7 +551,7 @@ function set_calc_header() {
 function update_current_values(data : any[]) {
     let sheet = get_sheet("Calculations")
     let range = sheet.getRange("B6:B9")
-    let current_values = [[EB_to_role(data[0])], [data[0]], [calc_mer(data[2], data[1])], [calc_JER(data[2], data[1])]]
+    let current_values = [[EB_to_role(data[0])], [data[0]], [data[6]], [data[5]]]
 
     range.setValues(current_values)
     custom_number(false, 7, 2, "Calculations") // Display EB with custom number
