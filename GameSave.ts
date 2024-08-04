@@ -1,5 +1,7 @@
-class GameSave {
-    readonly save:JSON;
+import * as saveTypes from "./saveTypes"
+
+export class GameSave {
+    readonly save: saveTypes.Root;
 
     /**
      * initializes the save variable of this instance 
@@ -15,7 +17,7 @@ class GameSave {
      * 
      * @returns JSON save file
      */
-    get gamesave(): any {return this.save}
+    get gamesave() : saveTypes.Root {return this.save}
 
     /**
      * Returns the se of the save
@@ -38,7 +40,6 @@ class GameSave {
      * 
      * @returns Prestige Number as number
      */
-    // @ts-expect-error: game exists within the output, however ts doesn't know this
     get prestiges(): number { return this.save.stats.numPrestiges }
     
     /**
@@ -46,16 +47,28 @@ class GameSave {
      * 
      * @returns UNIX time of save as number
      */
-    // @ts-expect-error: game exists within the output, however ts doesn't know this
     get time(): number { return Math.floor(this.save.settings.lastBackupTime) }
   
     /**
      * Returns a JSON of the ER in the save
      * 
-     * @returns ER as JSON
+     * @returns ER
      */
-    // @ts-expect-error: game exists within the output, however ts doesn't know this
-    get ER() { return this.save.game.epicResearchList }
+    get ER() : saveTypes.EpicResearchList[] { return this.save.game.epicResearchList }
+
+    /**
+     * returns saved sets found in the save
+     */
+    get arti_sets() : saveTypes.SavedArtifactSetsList[] {
+        return this.save.artifactsDb.savedArtifactSetsList
+    }
+
+    /**
+     * returns all artifacts found within the save
+     */
+    get get_arti_inv() : saveTypes.InventoryItemsList[] {
+        return this.save.artifactsDb.inventoryItemsList
+    }
 
     /**
      * gets the soul bonus epic research amount
@@ -84,8 +97,8 @@ class GameSave {
      * @returns JSON of the requested path if found, otherwise null
      */
     get_path(path: string): any {
-        let paths = path.split(".")
-        let current_item = this.gamesave
+        let paths : any = path.split(".")
+        let current_item : any = this.gamesave
         for (var i = 0; i < paths.length; i++) {
             if (!current_item[paths[i]]) {
                 return null

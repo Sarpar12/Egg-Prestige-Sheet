@@ -1,3 +1,5 @@
+import { GameSave } from "./GameSave";
+
 // credit to @toffepeer
 /**
  * onOpen() is triggered whenever the sheet is opened. 
@@ -670,3 +672,9 @@ function update_JER_wrapper() {
     }
     custom_number_wrapper(true, 3, 2+data_length, 6, 6, "Calculations")
 }
+
+////////////////////////////
+///////
+////// Code after this is clothed eb only
+//////
+////////////////////////////
