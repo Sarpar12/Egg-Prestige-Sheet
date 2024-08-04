@@ -24,16 +24,14 @@ export class GameSave {
      * 
      * @returns SE count as number 
      */
-    // @ts-expect-error: game exists within the output, however ts doesn't know this
-    get SE(): number { return parseFloat(this.save.game.soulEggsD) }
+    get SE(): number { return this.save.game.soulEggsD }
     
     /**
      * Returns pe count of the save
      * 
      * @returns PE count as number
      */
-    // @ts-expect-error: game exists within the output, however ts doesn't know this
-    get PE(): number { return parseInt(this.save.game.eggsOfProphecy) }
+    get PE(): number { return this.save.game.eggsOfProphecy }
     
     /**
      * Returns the number of prestiges

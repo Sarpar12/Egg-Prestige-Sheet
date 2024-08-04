@@ -1,7 +1,9 @@
 /// All credit for this code goes to @tiller.s on discord
 /// Their code was the basis for this
 
-const ALL_ROLES : string[] = [
+import { GameSave } from "./GameSave";
+
+export const ALL_ROLES : string[] = [
     "Farmer I",
     "Farmer I",
     "Farmer I",
@@ -52,7 +54,7 @@ const ALL_ROLES : string[] = [
  * @param EB the earnings bonus, as an number
  * @returns string, the farmer role
  */
-function EB_to_role(EB: number) : string {
+export function EB_to_role(EB: number) : string {
     let power : number = -1
     while (EB >= 1) {
         EB /= 10;
@@ -66,7 +68,7 @@ function EB_to_role(EB: number) : string {
  * converts a given role into a eb role
  * @param role the role selected
  */
-function role_to_EB(role: string) : number{
+export function role_to_EB(role: string) : number{
     // In case a role isn't found
     let role_position : number = Math.max(ALL_ROLES.indexOf(role), 0)
     return (10**role_position)
@@ -77,7 +79,7 @@ function role_to_EB(role: string) : number{
  * @param gameSave the save file of the user
  * @returns a number list of [soul bounus, prop bonus]
  */
-function get_se_pe_bonus() : number[] {
+export function get_se_pe_bonus() : number[] {
     let gameSave : GameSave = new GameSave(get_script_properties('EID'))
     return [gameSave.soul_bonus, gameSave.prop_bonus]
 }
@@ -88,7 +90,7 @@ function get_se_pe_bonus() : number[] {
  * @param se the amount of se 
  * @returns MER for the specified pe and se
  */
-function calc_mer(pe : number, se : number) : number {
+export function calc_mer(pe : number, se : number) : number {
     if (se <= 0) {
         return 0
     }
@@ -102,7 +104,7 @@ function calc_mer(pe : number, se : number) : number {
  * @param pe the amount of pe to calcuate with
  * @returns the number of SE required
  */
-function calculate_se_target_MER(target_mer : number, pe : number) : number {
+export function calculate_se_target_MER(target_mer : number, pe : number) : number {
     let exp : number = (10 * target_mer + pe - 200) / 91;
     return (10 ** exp) * 1e18;
 }
@@ -114,7 +116,7 @@ function calculate_se_target_MER(target_mer : number, pe : number) : number {
  * @param current_se the current se amount
  * @returns a list of combinations for the targetted mer
  */
-function calculate_sepe_target_MER(target_mer : number, current_pe : number, current_se : number) {
+export function calculate_sepe_target_MER(target_mer : number, current_pe : number, current_se : number) {
     const combos : {pe : number, se :number}[] = [];
     
     for (let new_pe = 0; new_pe <= 5; new_pe += 1) {
@@ -159,7 +161,7 @@ function calculate_SE_for_target(target_eb : number, pe :number, se_bonus : numb
  * @param pe_bonus pe bonus researched
  * @returns list of objects containing pe and se amounts
  */
-function calculate_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number) {
+export function calculate_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number) {
     // Initial Comboes
     let combos = []
     let pe = 0
@@ -188,7 +190,7 @@ function calculate_SE_EB_target_combos(target_eb : number, current_se : number, 
 // Anything after this is for solving JER
 // It's more complicated
 
-function calc_JER(pe : number, se : number) : number {
+export function calc_JER(pe : number, se : number) : number {
     const logSE = Math.log10(se);
     return (((0.1519 * Math.pow(logSE, 3) - 4.8517 * Math.pow(logSE, 2) + 48.248 * logSE - 143.46) / pe)*100*pe+100*49) / (pe + 100);
 }
@@ -238,7 +240,7 @@ function calculate_se_for_target_jER(jer : number, pe : number) {
  * @param current_se current se of player 
  * @returns list of comboes
  */
-function calculate_combos_for_target_jer(target_jer : number, current_pe : number, current_se : number) {
+export function calculate_combos_for_target_jer(target_jer : number, current_pe : number, current_se : number) {
     const combos : {pe : number, se : number}[] = [];
     
     for (let new_pe = 0; new_pe <= 5; new_pe += 1) {

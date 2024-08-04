@@ -1,4 +1,9 @@
 import { GameSave } from "./GameSave";
+import { role_to_EB, 
+         EB_to_role, ALL_ROLES, 
+         calculate_SE_EB_target_combos, 
+         calculate_sepe_target_MER,
+         calculate_combos_for_target_jer } from "./eb";
 
 // credit to @toffepeer
 /**
@@ -22,6 +27,7 @@ import { GameSave } from "./GameSave";
  * For each item, unless it's a submenu name, it will call 
  * the corresponding function in the 2nd parameter
  */
+// @ts-expect-error: exports don't matter in app scripts
 function onOpen() {
     const ui = SpreadsheetApp.getUi();
     ui.createMenu('Data Fetching')
@@ -53,6 +59,7 @@ function onOpen() {
  * currently updates selected eb to match the selected role
  * @param e an event
  */
+// @ts-expect-error: exports don't matter in app scripts
 function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
     let range = e.range
     if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
@@ -90,6 +97,7 @@ function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
  * If no number is detected or trigger already exists, a message will be shown 
  * and nothing will happen. 
  */
+// @ts-expect-error: exports don't matter in app scripts
 function create_auto_trigger() {
     let response = Math.round(parseFloat(SpreadsheetApp.getUi().prompt("Please enter the duration between each update(in hours): ").getResponseText()))
     if (!response || response == 0) {
@@ -111,6 +119,7 @@ function create_auto_trigger() {
  * removes a trigger if it already exists and updates properties TRIGGER_TIME and TRIGGER_SET. 
  * If no trigger exists, a messsage will be shown and nothing else will happen
  */
+// @ts-expect-error: exports don't matter in app scripts
 function remove_trigger() {
     if ((get_script_properties("TRIGGER_SET") === "false") || !(get_script_properties("TRIGGER_SET"))) {
         alert("No Trigger has been set!")
@@ -126,6 +135,7 @@ function remove_trigger() {
  * Displays how often a trigger is set to run and the last updated
  * time. If no trigger exists, it will display a different message
  */
+// @ts-expect-error: exports don't matter in app scripts
 function automatic_trigger_info() {
     if (!(get_script_properties("TRIGGER_TIME"))) {
         alert(`No Trigger has been set!\nLast Updated: ${get_script_properties("LAST_UPDATED")}`)
@@ -154,6 +164,7 @@ function setEID() {
 /**
  * Shows the EID in the form of a UI popup
  */
+// @ts-expect-error: exports don't matter in app scripts
 function showEID() {
     alert(`The EID currently stored is: ${get_script_properties('EID')}`);
 }
@@ -192,6 +203,7 @@ function get_tz(): string {
  * Wrapper Function for fill_cells,
  * passes in the parameter
  */
+// @ts-expect-error: exports don't matter in app scripts
 function refresh_data() {
     if (!get_script_properties('EID')) {
         setEID()
@@ -208,6 +220,7 @@ function refresh_data() {
  * this function is called from the automatic trigger, 
  * assumes EID exists
  */
+// @ts-expect-error: exports don't matter in app scripts
 function refresh_auto() {
     fill_cells((get_script_properties("DUPE_ENABLED") === "true"), true)
 }
@@ -350,6 +363,7 @@ function check_dupe(save: GameSave) {
 /**
  * enables or disables duplicate entries
  */
+// @ts-expect-error: exports don't matter in app scripts
 function toggle_duplicates() {
     if ((get_script_properties("DUPE_ENABLED") === "true")) {
         set_script_property("DUPE_ENABLED", "false")
@@ -362,6 +376,7 @@ function toggle_duplicates() {
 /**
  * sets the time to mm-dd-yyyy
  */
+// @ts-expect-error: exports don't matter in app scripts
 function set_time_wrapper_1() {
     set_time_format(false, true)
 }
@@ -369,6 +384,7 @@ function set_time_wrapper_1() {
 /**
  * sets the time to hh-mm-ss mm-dd-yyyy
  */
+// @ts-expect-error: exports don't matter in app scripts
 function set_time_wrapper_2() {
     set_time_format(true, true)
 }
@@ -376,6 +392,7 @@ function set_time_wrapper_2() {
 /**
  * sets the time to dd-mm-yyyy
  */
+// @ts-expect-error: exports don't matter in app scripts
 function set_time_wrapper_3() {
     set_time_format(false, false)
 }
@@ -423,6 +440,7 @@ function get_time_format() {
 /**
  * displays current time format to user
  */
+// @ts-expect-error: exports don't matter in app scripts
 function display_time_format() {
     alert(`Your currently selected format is ${get_time_format()}`)
 }
