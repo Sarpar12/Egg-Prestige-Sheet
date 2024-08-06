@@ -52,7 +52,7 @@ function find_eb_arti_stones(inventory : saveTypes.InventoryItemsList[]) {
     let eb_arti : saveTypes.Artifact[] = []
     for (let i = 0; i < inventory.length; i++) {
         let item : saveTypes.InventoryItemsList = inventory[i]
-        if (EB_ARTFIACT_IDS[item.artifact.spec.name]) {
+        if (is_eb_artifact(item.artifact)) {
             eb_arti.push(item.artifact)
         }
     }
@@ -100,4 +100,74 @@ function calculate_arti_boosts(artifact_list : {[key : number] : {level : number
     })
 
     return {prop_boost: prop_boost, soul_boost : soul_boost}
+}
+
+/**
+ * finds an given artifact by it's id number
+ * @param artifact_inv the artifact inventory
+ * @param id the id of the artifact to find
+ * @returns saveTypes.Artifact item
+ */
+function find_artifact_by_id(artifact_inv : saveTypes.InventoryItemsList[], id : number) {
+    for (let i = 0; i < artifact_inv.length; i++) {
+        if (artifact_inv[i].itemId === id) {
+            return artifact_inv[i].artifact
+        }
+    }
+}
+
+/**
+ * determines if an artifact contains eb stones
+ * @param arti the artifact
+ */
+function contains_eb_stones(arti : saveTypes.Artifact) {
+    for (let i = 0; arti.stonesList.length; i++)  {
+        let stone_name = arti.stonesList[i].name
+        if (EB_ARTFIACT_IDS[stone_name]) {
+            return true
+        }
+    }
+    return false
+}
+
+/**
+ * determines if an artifact affects eb
+ * @param arti a Artifact item
+ * @returns boolean true or false
+ */
+function is_eb_artifact(arti : saveTypes.Artifact) {
+    if (EB_ARTFIACT_IDS[arti.spec.name]) {
+        return true
+    }
+    return false
+}
+
+/**
+ * finds all sets within the saved sets that contain artifacts 
+ * @param set_list the list of saved artifact sets
+ * @param inv the inventory
+ * @returns a 2d array of artifacts
+ */
+// @ts-expect-error: export not required
+function find_eb_sets(set_list : saveTypes.SavedArtifactSetsList[], inv : saveTypes.InventoryItemsList[]) {
+    let eb_sets : saveTypes.Artifact[][] = []
+    for (let i = 0; i < set_list.length; i++) {
+        let arti_id_list = set_list[i].slotsList
+        let is_eb_set = false
+        let arti_list : saveTypes.Artifact[] = []
+        for (let j = 0; j < arti_id_list.length; j++) {
+            let arti = find_artifact_by_id(inv, arti_id_list[j].itemId)
+            arti_list.push(arti)
+            if (is_eb_artifact(arti)) {
+                is_eb_set = true
+            } 
+            else if (contains_eb_stones(arti)) {
+                is_eb_set = true
+            }
+        }
+        if (is_eb_set) {
+            eb_sets.push(arti_list)
+        }
+    }
+    return eb_sets
 }
