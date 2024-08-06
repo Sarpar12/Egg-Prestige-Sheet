@@ -3,7 +3,7 @@
 
 import { GameSave } from "./GameSave";
 
-export const ALL_ROLES : string[] = [
+const ALL_ROLES : string[] = [
     "Farmer I",
     "Farmer I",
     "Farmer I",
@@ -54,7 +54,8 @@ export const ALL_ROLES : string[] = [
  * @param EB the earnings bonus, as an number
  * @returns string, the farmer role
  */
-export function EB_to_role(EB: number) : string {
+// @ts-expect-error: namespace doesn't matter
+function EB_to_role(EB: number) : string {
     let power : number = -1
     while (EB >= 1) {
         EB /= 10;
@@ -68,7 +69,8 @@ export function EB_to_role(EB: number) : string {
  * converts a given role into a eb role
  * @param role the role selected
  */
-export function role_to_EB(role: string) : number{
+// @ts-expect-error: namespace doesn't matter
+function role_to_EB(role: string) : number{
     // In case a role isn't found
     let role_position : number = Math.max(ALL_ROLES.indexOf(role), 0)
     return (10**role_position)
@@ -79,7 +81,8 @@ export function role_to_EB(role: string) : number{
  * @param gameSave the save file of the user
  * @returns a number list of [soul bounus, prop bonus]
  */
-export function get_se_pe_bonus() : number[] {
+// @ts-expect-error: namespace doesn't matter
+function get_se_pe_bonus() : number[] {
     let gameSave : GameSave = new GameSave(get_script_properties('EID'))
     return [gameSave.soul_bonus, gameSave.prop_bonus]
 }
@@ -90,7 +93,8 @@ export function get_se_pe_bonus() : number[] {
  * @param se the amount of se 
  * @returns MER for the specified pe and se
  */
-export function calc_mer(pe : number, se : number) : number {
+// @ts-expect-error: namespace doesn't matter
+function calc_mer(pe : number, se : number) : number {
     if (se <= 0) {
         return 0
     }
@@ -104,7 +108,7 @@ export function calc_mer(pe : number, se : number) : number {
  * @param pe the amount of pe to calcuate with
  * @returns the number of SE required
  */
-export function calculate_se_target_MER(target_mer : number, pe : number) : number {
+function calculate_se_target_MER(target_mer : number, pe : number) : number {
     let exp : number = (10 * target_mer + pe - 200) / 91;
     return (10 ** exp) * 1e18;
 }
@@ -116,7 +120,8 @@ export function calculate_se_target_MER(target_mer : number, pe : number) : numb
  * @param current_se the current se amount
  * @returns a list of combinations for the targetted mer
  */
-export function calculate_sepe_target_MER(target_mer : number, current_pe : number, current_se : number) {
+// @ts-expect-error: namespace doesn't matter
+function calculate_sepe_target_MER(target_mer : number, current_pe : number, current_se : number) {
     const combos : {pe : number, se :number}[] = [];
     
     for (let new_pe = 0; new_pe <= 5; new_pe += 1) {
@@ -161,7 +166,8 @@ function calculate_SE_for_target(target_eb : number, pe :number, se_bonus : numb
  * @param pe_bonus pe bonus researched
  * @returns list of objects containing pe and se amounts
  */
-export function calculate_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number) {
+// @ts-expect-error: namespace doesn't matter
+function calculate_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number) {
     // Initial Comboes
     let combos = []
     let pe = 0
@@ -189,8 +195,8 @@ export function calculate_SE_EB_target_combos(target_eb : number, current_se : n
 
 // Anything after this is for solving JER
 // It's more complicated
-
-export function calc_JER(pe : number, se : number) : number {
+// @ts-expect-error: namespace doesn't matter
+function calc_JER(pe : number, se : number) : number {
     const logSE = Math.log10(se);
     return (((0.1519 * Math.pow(logSE, 3) - 4.8517 * Math.pow(logSE, 2) + 48.248 * logSE - 143.46) / pe)*100*pe+100*49) / (pe + 100);
 }
@@ -240,7 +246,8 @@ function calculate_se_for_target_jER(jer : number, pe : number) {
  * @param current_se current se of player 
  * @returns list of comboes
  */
-export function calculate_combos_for_target_jer(target_jer : number, current_pe : number, current_se : number) {
+// @ts-expect-error: namespace doesn't matter
+function calculate_combos_for_target_jer(target_jer : number, current_pe : number, current_se : number) {
     const combos : {pe : number, se : number}[] = [];
     
     for (let new_pe = 0; new_pe <= 5; new_pe += 1) {
@@ -319,4 +326,25 @@ function solve_cubic_equation(a : number, b : number, c : number, d : number) : 
     }
     
     return roots.sort();
+}
+
+////////////////////
+// Clothed EB targetting below
+////////////////////
+
+/**
+ * calculates the EB gained per se
+ * @param pe the amount of pe
+ * @param se_bonus the levels of se bonus researched
+ * @param pe_bonus the amount of pe bonus researched
+ * @param artifacts_effects the effects of artifacts and stones
+ */
+// @ts-expect-error: namespace doesn't matter
+function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
+    return ((10 + se_bonus) * (1 + arti_effects["soul_boost"])) * ((1.05 + (0.01 * pe_bonus) + arti_effects["prop_boost"]) ** pe)
+}
+
+// @ts-expect-error: namespace doesn't matter
+function calculate_clothed_eb(pe : number, se : number) {
+
 }

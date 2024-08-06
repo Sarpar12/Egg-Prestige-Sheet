@@ -1,11 +1,6 @@
 import { GameSave } from "./GameSave";
-import { role_to_EB, 
-         EB_to_role, ALL_ROLES, 
-         calculate_SE_EB_target_combos, 
-         calculate_sepe_target_MER,
-         calculate_combos_for_target_jer } from "./eb";
 
-// credit to @toffepeer
+// credit to @toffepeerc
 /**
  * onOpen() is triggered whenever the sheet is opened. 
  * Currently, it creates a menu shown below
@@ -65,6 +60,7 @@ function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
     if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
         let sheet = get_sheet("Calculations")
         let selectedRole = sheet.getRange("B1").getValue()
+        // @ts-expect-error: namespace doesn't matter
         sheet.getRange("B2").setValue(role_to_EB(selectedRole))
         custom_number(false, 2, 2, "Calculations")
     }
@@ -280,6 +276,7 @@ function sheet_fill(data: any[]) {
     update_MER_wrapper()
     set_prev_header_values(data[0])
     update_current_values(data[0])
+    // @ts-expect-error: namespace doesn't matter
     create_role_dropdown([EB_to_role(data[0][0])])
 }
 
@@ -542,6 +539,7 @@ function create_prev_header() {
  * @param data the data param from sheet_fill - [eb, se, pe, prestiges, time, mer, jer]
  */
 function set_prev_header_values(data : any[]) {
+    // @ts-expect-error: namespace doesn't matter
     let trimmed_data = [EB_to_role(data[0]), data[0], data[6], data[5], data[3]]
     let sheet = get_sheet("Calculations")
     let p_sheet = get_sheet("Prestige Data")
@@ -571,6 +569,7 @@ function set_prev_header_values(data : any[]) {
 function update_current_values(data : any[]) {
     let sheet = get_sheet("Calculations")
     let range = sheet.getRange("B6:B9")
+    // @ts-expect-error: namespace doesn't matter
     let current_values = [[EB_to_role(data[0])], [data[0]], [data[6]], [data[5]]]
 
     range.setValues(current_values)
@@ -581,6 +580,7 @@ function update_current_values(data : any[]) {
  * creates the role dropdown, if no data validation rule exists for that cell
  */
 function create_role_dropdown(data : (string)[]) {
+    // @ts-expect-error: namespace doesn't matter
     let role_list : string[] = ALL_ROLES.slice(ALL_ROLES.indexOf(data[0]) + 1, -1) // Remove infinifarmer from the list
     let cell = get_sheet("Calculations").getRange("B1")
     create_data_validation_dropdown(cell, role_list)
@@ -603,6 +603,7 @@ function create_dv_jer_mer() {
  */
 function get_current_values() : (string | number)[] {
     let save = new GameSave(get_script_properties("EID"))
+    // @ts-expect-error: namespace doesn't matter
     return [EB_to_role(save.EB), save.EB, save.JER, save.MER]
 }
 
@@ -619,6 +620,7 @@ function update_MER_wrapper() {
     let prestige_sheet = get_sheet("Prestige Data")
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let target_mer = sheet.getRange("B4").getValue()
+    // @ts-expect-error: namespace doesn't matter
     let mer_combos = calculate_sepe_target_MER(target_mer, sepe[0][1], sepe[0][0])
     
     // Reset Previous Data
@@ -647,7 +649,9 @@ function update_EB_wrapper() {
     }
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let sepe_bonus = [parseInt(get_script_properties('SE_ER')), parseInt(get_script_properties('PE_ER'))]
+    // @ts-expect-error: namespace doesn't matter
     let target_EB : number = role_to_EB(sheet.getRange("B1").getValue())
+    // @ts-expect-error: namespace doesn't matter
     let combos = calculate_SE_EB_target_combos(target_EB, sepe[0][0], sepe[0][1], sepe_bonus[0], sepe_bonus[1])
 
     // Clear previous data
@@ -677,6 +681,7 @@ function update_JER_wrapper() {
     }
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let target_mer = sheet.getRange("B3").getValue()
+    // @ts-expect-error: namespace doesn't matter
     let jer_combos = calculate_combos_for_target_jer(target_mer, sepe[0][1], sepe[0][0])
     
     // Reset Previous Data
