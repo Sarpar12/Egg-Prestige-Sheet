@@ -339,12 +339,20 @@ function solve_cubic_equation(a : number, b : number, c : number, d : number) : 
  * @param pe_bonus the amount of pe bonus researched
  * @param artifacts_effects the effects of artifacts and stones
  */
-// @ts-expect-error: namespace doesn't matter
 function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
     return ((10 + se_bonus) * (1 + arti_effects["soul_boost"])) * ((1.05 + (0.01 * pe_bonus) + arti_effects["prop_boost"]) ** pe)
 }
 
+/**
+ * finds the clothed eb
+ * @param pe the amount of pe
+ * @param pe_bonus the bonus pe research 
+ * @param se the amount of se
+ * @param se_bonus  the se epic research
+ * @param arti_effects the artifact effects
+ * @returns the clothed eb
+ */
 // @ts-expect-error: namespace doesn't matter
-function calculate_clothed_eb(pe : number, se : number) {
-
+function calculate_clothed_eb(pe : number, pe_bonus : number, se : number, se_bonus : number, arti_effects : {prop_boost : number, soul_boost : number}) {
+    return se * calculate_Clothed_EB_per_SE(pe, se_bonus, pe_bonus, arti_effects)
 }

@@ -701,3 +701,12 @@ function update_JER_wrapper() {
 ////// Code after this is clothed eb only
 //////
 ////////////////////////////
+
+function test_clothed_eb() {
+    
+}
+
+
+function test_eb_sets() {
+    
+}
