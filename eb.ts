@@ -356,3 +356,43 @@ function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : 
 function calculate_clothed_eb(pe : number, pe_bonus : number, se : number, se_bonus : number, arti_effects : {prop_boost : number, soul_boost : number}) {
     return se * calculate_Clothed_EB_per_SE(pe, se_bonus, pe_bonus, arti_effects)
 }
+
+function calculate_clothed_SE_for_target(target_EB : number, pe : number, pe_bonus : number, se_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
+    return target_EB / calculate_Clothed_EB_per_SE(pe, se_bonus, pe_bonus, arti_effects)
+}
+
+/**
+ * finds combinations of se and pe that would reach a specified combination
+ * @param target_eb the eb to be reached
+ * @param current_se the current amount of se 
+ * @param current_pe the current amount of pe
+ * @param se_bonus se bonus researched
+ * @param pe_bonus pe bonus researched
+ * @returns list of objects containing pe and se amounts
+ */
+// @ts-expect-error: namespace doesn't matter
+function calculate_clothed_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
+    // Initial Comboes
+    let combos = []
+    let pe = 0
+    while (true) {
+        const se = calculate_clothed_SE_for_target(target_eb, pe, se_bonus, pe_bonus, arti_effects)
+        combos.push({pe, se})
+        if (se - current_se < 0) {
+            break;
+        }
+        pe += 1
+    }
+
+    // Getting the actual player values
+    let player_combo = combos
+        .map(({pe, se}) => 
+            ({
+                pe: pe - current_pe,
+                se: Math.max(se - current_se, 0)
+            })
+        )
+        .filter(({pe}) => pe >= 0);
+
+    return player_combo;
+}
