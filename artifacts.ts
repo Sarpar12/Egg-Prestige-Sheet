@@ -42,21 +42,13 @@ const SOUL_EFFECT : {[key : number] : {[key :number] : number}} = {
 /**
  * finds all artifacts and stones in the inventory that boost eb
  * 
- * NOTE: this only returns the Artifact Portion of the item, anything else is stricly
- *       unecessary
  * @param inventory the inventory found in the save file
  * @returns a list of Inventory items that contain effects to boost eb
  */
 // @ts-ignore: namespace doesn't matter in gas
 function find_eb_arti_stones(inventory : saveTypes.InventoryItemsList[]) {
-    let eb_arti : saveTypes.Artifact[] = []
-    for (let i = 0; i < inventory.length; i++) {
-        let item : saveTypes.InventoryItemsList = inventory[i]
-        if (is_eb_artifact(item.artifact)) {
-            eb_arti.push(item.artifact)
-        }
-    }
-    return eb_arti
+    let filtered_artis = inventory.filter(item => Object.keys(EB_ARTFIACT_IDS).map(Number).includes(item.artifact.spec.name))
+    return filtered_artis
 }
 
 /**
@@ -65,15 +57,15 @@ function find_eb_arti_stones(inventory : saveTypes.InventoryItemsList[]) {
  * @returns an object with properties of each object's name and it's highest level found
  */
 // @ts-ignore: namespace doens't matter
-function find_best_artifacts(artifact_list : saveTypes.Artifact[]) : {[key : number] : {level : number, rarity : number}} {
-    let split_list : {[key : number] : {level : number, rarity : number}} = {}
-    for (let i = 0; i < artifact_list.length; i++) {
-        let arti_spec : saveTypes.Spec2 = artifact_list[i].spec
-        if ((!(split_list[arti_spec.name])) || arti_spec.level > split_list[arti_spec.name]["level"]) {
-            split_list[arti_spec.name] = {level : arti_spec.level, rarity : arti_spec.rarity}
+function find_best_artifacts(artifact_list: saveTypes.InventoryItemsList[]): { [key: number]: { level: number, rarity: number } } {
+    return artifact_list.reduce<{ [key: number]: { level: number, rarity: number } }>((acc, artifact) => {
+        const arti_spec = artifact.artifact.spec;
+        // If the artifact name is not in the accumulator or if the current level is higher, update the accumulator
+        if (!acc[arti_spec.name] || arti_spec.level > acc[arti_spec.name].level) {
+            acc[arti_spec.name] = { level: arti_spec.level, rarity: arti_spec.rarity };
         }
-    }
-    return split_list
+        return acc;
+    }, {}); // Initial value of the accumulator is an empty object
 }
 
 /**
@@ -106,14 +98,10 @@ function calculate_arti_boosts(artifact_list : {[key : number] : {level : number
  * finds an given artifact by it's id number
  * @param artifact_inv the artifact inventory
  * @param id the id of the artifact to find
- * @returns saveTypes.Artifact item
+ * @returns saveTypes.InventoryItemList
  */
 function find_artifact_by_id(artifact_inv : saveTypes.InventoryItemsList[], id : number) {
-    for (let i = 0; i < artifact_inv.length; i++) {
-        if (artifact_inv[i].itemId === id) {
-            return artifact_inv[i].artifact
-        }
-    }
+    return artifact_inv.find(artifact => id === artifact.itemId)
 }
 
 /**
@@ -156,7 +144,7 @@ function find_eb_sets(set_list : saveTypes.SavedArtifactSetsList[], inv : saveTy
         let is_eb_set = false
         let arti_list : saveTypes.Artifact[] = []
         for (let j = 0; j < arti_id_list.length; j++) {
-            let arti = find_artifact_by_id(inv, arti_id_list[j].itemId)
+            let arti = find_artifact_by_id(inv, arti_id_list[j].itemId).artifact
             arti_list.push(arti)
             if (is_eb_artifact(arti)) {
                 is_eb_set = true

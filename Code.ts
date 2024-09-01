@@ -696,17 +696,14 @@ function update_JER_wrapper() {
     custom_number_wrapper(true, 3, 2+data_length, 6, 6, "Calculations")
 }
 
+
 ////////////////////////////
 ///////
-////// Code after this is clothed eb only
+////// Code here is used for testing
 //////
 ////////////////////////////
 
-function test_clothed_eb() {
-    
-}
-
-
-function test_eb_sets() {
-    
+function test_artifact_sets() {
+    let save = new GameSave(get_script_properties("EID"))
+    Logger.log(find_best_artifact(find_eb_arti_stones(save.get_arti_inv)))
 }
