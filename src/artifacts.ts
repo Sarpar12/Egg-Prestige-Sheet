@@ -3,9 +3,6 @@
 // For artifact calculations only
 //
 //////////////////////
-
-import * as saveTypes from "./saveTypes"
-
 const BOOK = 10
 const PROP = 39
 const SOUL = 34
@@ -73,7 +70,6 @@ function find_best_artifacts(artifact_list: saveTypes.InventoryItemsList[]): { [
  * @param artifact_list the list of artifacts, should be the output from find_best_artifacts()
  * @returns a object containing soul and prop boosts values
  */
-// @ts-expect-error: namespace doesn't exist
 function calculate_arti_boosts(artifact_list : {[key : number] : {level : number, rarity : number}}) : { prop_boost : number, soul_boost : number} {
     let prop_boost = 0.0
     let soul_boost = 0.0
@@ -136,7 +132,6 @@ function is_eb_artifact(arti : saveTypes.Artifact) {
  * @param inv the inventory
  * @returns a 2d array of artifacts
  */
-// @ts-expect-error: export not required
 function find_eb_sets(set_list : saveTypes.SavedArtifactSetsList[], inv : saveTypes.InventoryItemsList[]) {
     let eb_sets : saveTypes.Artifact[][] = []
     for (let i = 0; i < set_list.length; i++) {

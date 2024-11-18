@@ -1,4 +1,4 @@
-import * as saveTypes from "./saveTypes"
+import * as saveTypes from "../typings/saveTypes"
 
 export class GameSave {
     readonly save: saveTypes.Root;

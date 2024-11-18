@@ -706,5 +706,5 @@ function update_JER_wrapper() {
 
 function test_artifact_sets() {
     let save = new GameSave(get_script_properties("EID"))
-    Logger.log(find_best_artifact(find_eb_arti_stones(save.get_arti_inv)))
+    Logger.log(find_best_artifacts(find_eb_arti_stones(save.get_arti_inv)))
 }
