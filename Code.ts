@@ -2,16 +2,16 @@ import { GameSave } from "./GameSave";
 
 // credit to @toffepeerc
 /**
- * onOpen() is triggered whenever the sheet is opened. 
+ * onOpen() is triggered whenever the sheet is opened.
  * Currently, it creates a menu shown below
- * 
+ *
  * Data Fetching
  *  - Refresh
  *  - Automatic Updates
  *    - Enable Automatic Updates
  *    - Disable Automatic Updates
  *    - Automatic Update Information
- *  - Duplicate Entires
+ *  - Duplicate Entries
  *    - Toggle Duplicate Entries
  *    - Get Duplicate Status
  *  - EID Stuff
@@ -19,7 +19,7 @@ import { GameSave } from "./GameSave";
  *    - Show EID currently saved
  *  - Extras
  *    - Format Gains
- * For each item, unless it's a submenu name, it will call 
+ * For each item, unless it's a submenu name, it will call
  * the corresponding function in the 2nd parameter
  */
 // @ts-expect-error: exports don't matter in app scripts
@@ -144,9 +144,9 @@ function automatic_trigger_info() {
  * stores an EID inside a script property(and validates EID's)
  */
 function setEID() {
-    var regex = /^EI\d{16}$/; // Regular expression for the specified format
-    var EIDResponse = SpreadsheetApp.getUi().prompt('Please enter your EID:');
-    var EID = EIDResponse.getResponseText(); // Extract the text entered by the user
+    const regex = /^EI\d{16}$/; // Regular expression for the specified format
+    const EIDResponse = SpreadsheetApp.getUi().prompt('Please enter your EID:');
+    const EID = EIDResponse.getResponseText(); // Extract the text entered by the user
 
     // Check if the entered EID matches the required format
     if (regex.test(EID)) {
@@ -167,9 +167,9 @@ function showEID() {
 
 /**
  * returns the specified data in a list
- * 
- * @param save: an instance of the GameSave class
+ *
  * @return arr[]: [float, float, int, int, string, float, float]
+ * @param save a GameSave object
  */
 function get_data(save : GameSave) {
     // [Eb%, Soul Eggs, EOP, prestiges, time of backup]
@@ -177,7 +177,7 @@ function get_data(save : GameSave) {
 }
 
 /**
- * converts an unix timestamp into a human-readable string
+ * converts a unix timestamp into a human-readable string
  * 
  * @param timestamp unix timestamp
  * @returns timestamp in the form of "MM-dd-yyyy HH:mm:ss"
@@ -223,7 +223,8 @@ function refresh_auto() {
 
 /**
  * conditional logic to check if the sheet can be filled in
- * @param dupe_enabled if the property DUPE_ENABLED is "true" 
+ * @param dupe_enabled if the property DUPE_ENABLED is "true"
+ * @param automatic if the function wa run from an automatic call
  */
 function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
     let save = new GameSave(get_script_properties('EID'))
@@ -250,11 +251,11 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
 
 /**
  * Actually fills in the sheets
- * 
- * @param data [eb, se, pe, prestiges, time, mer, jer]
+ *
+ * @param data : [eb, se, pe, prestiges, time, mer, jer]
  */
 function sheet_fill(data: any[]) {
-    var sheet = get_sheet("Prestige Data");
+    const sheet = get_sheet("Prestige Data");
     let p_sheet = get_sheet('Calculations')
     if (sheet.getLastRow() === 0) {
         set_sheet_header()
@@ -283,8 +284,8 @@ function sheet_fill(data: any[]) {
 /**
  * sets the background color for the specified cells
  * @param sheet the active sheet(ie: :"Prestige Data")
- * @param x the row of the cell
- * @param y the column of the cell
+ * @param row the row of the cell
+ * @param col the column of the cell
  * @param data the array from get_data()
  */
 function set_color(sheet: GoogleAppsScript.Spreadsheet.Sheet, row: number, col: number, data: any[]) {
@@ -352,8 +353,8 @@ function dupe_status() {
 function check_dupe(save: GameSave) {
     //EID = PropertiesService.getScriptProperties().getProperty('EID')
     //var response = JSON.parse(UrlFetchApp.fetch(`https://eiapi-production.up.railway.app/callkev?EID=${EID}`).getContentText())
-    var sheet = get_sheet("Prestige Data")
-    var old_eb = sheet.getRange(sheet.getLastRow(), 1).getValue()
+    const sheet = get_sheet("Prestige Data")
+    const old_eb = sheet.getRange(sheet.getLastRow(), 1).getValue()
     return save.EB == old_eb
 }
 
