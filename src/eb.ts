@@ -1,7 +1,7 @@
 /// All credit for this code goes to @tiller.s on discord
 /// Their code was the basis for this
 
-import { GameSave } from "./GameSave";
+import {GameSave} from "./GameSave";
 
 const ALL_ROLES : string[] = [
     "Farmer I",
@@ -337,7 +337,7 @@ function solve_cubic_equation(a : number, b : number, c : number, d : number) : 
  * @param pe the amount of pe
  * @param se_bonus the levels of se bonus researched
  * @param pe_bonus the amount of pe bonus researched
- * @param artifacts_effects the effects of artifacts and stones
+ * @param arti_effects the effects of artifacts and stones
  */
 function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
     return ((10 + se_bonus) * (1 + arti_effects["soul_boost"])) * ((1.05 + (0.01 * pe_bonus) + arti_effects["prop_boost"]) ** pe)
@@ -385,14 +385,12 @@ function calculate_clothed_SE_EB_target_combos(target_eb : number, current_se : 
     }
 
     // Getting the actual player values
-    let player_combo = combos
-        .map(({pe, se}) => 
+    return combos
+        .map(({pe, se}) =>
             ({
                 pe: pe - current_pe,
                 se: Math.max(se - current_se, 0)
             })
         )
         .filter(({pe}) => pe >= 0);
-
-    return player_combo;
 }

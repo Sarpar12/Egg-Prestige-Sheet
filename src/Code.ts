@@ -1,6 +1,6 @@
 import { GameSave } from "./GameSave";
 
-// credit to @toffepeerc
+// credit to @toffepeer
 /**
  * onOpen() is triggered whenever the sheet is opened.
  * Currently, it creates a menu shown below
@@ -86,7 +86,7 @@ function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
 
 /**
  * creates a trigger that automatically runs every ${user_input} hours, 
- * A succesful run will update the properties TRIGGER_SET and TRIGGER_TIME.
+ * A successful run will update the properties TRIGGER_SET and TRIGGER_TIME.
  * 
  * THERE CAN ONLY BE ONE TRIGGER 
  * 
@@ -113,7 +113,7 @@ function create_auto_trigger() {
 
 /**
  * removes a trigger if it already exists and updates properties TRIGGER_TIME and TRIGGER_SET. 
- * If no trigger exists, a messsage will be shown and nothing else will happen
+ * If no trigger exists, a message will be shown and nothing else will happen
  */
 // @ts-expect-error: exports don't matter in app scripts
 function remove_trigger() {
@@ -299,7 +299,7 @@ function set_color(sheet: GoogleAppsScript.Spreadsheet.Sheet, row: number, col: 
 }
 
 /**
- * Sets the header(1st) row of the google sheets to the below 
+ * Sets the header(1st) row of the Google sheets to the below
  * 
  * | EB | SE | PE | Prestige Number | Date Pulled | MER | JER | Notes 
  * 
@@ -332,7 +332,7 @@ function set_update_time() {
 }
 
 /**
- * shhows the current status of DUPE_ENABLED
+ * shows the current status of DUPE_ENABLED
  */
 function dupe_status() {
     if (!(get_script_properties("DUPE_ENABLED"))) {
@@ -453,7 +453,7 @@ function link_latest() {
     let last_row = Math.round(spreadsheet.getLastRow())
     let jump_url = `=HYPERLINK("#gid=0range=A${last_row}", "Latest Update")`
 
-    // This section adds it to the sheet itself at an fixed postion
+    // This section adds it to the sheet itself at a fixed position
     // Values will most likely be fixed
     spreadsheet.getRange(2, 10, 1).setValue(jump_url).setBackground('#DCDCDC').setFontWeight('bold')
 }
@@ -511,11 +511,11 @@ function set_calc_header() {
     custom_number(false, 7, 2, "Calculations") // Display EB with custom number
 
     // Setting Up previous value headers
-    // Will be contained in it's own two function 
+    // Will be contained in its own two function
     // so it doesn't run when sheet is being initialized
     create_prev_header()
 
-    // Setting up remaing things
+    // Setting up remaining things
     create_role_dropdown(current_values)
     create_dv_jer_mer()
 }
@@ -637,7 +637,7 @@ function update_MER_wrapper() {
 }
 
 /**
- * updates EB target information in the google sheets
+ * updates EB target information in the Google sheets
  */
 function update_EB_wrapper() {
     // Initial Data Getting
@@ -706,5 +706,10 @@ function update_JER_wrapper() {
 
 function test_artifact_sets() {
     let save = new GameSave(get_script_properties("EID"))
-    Logger.log(find_best_artifacts(find_eb_arti_stones(save.get_arti_inv)))
+    const eb_arti_stones = find_eb_arti_stones(save.get_arti_inv);
+    const best_arti_sets = find_best_artifacts(eb_arti_stones);
+    const arti_boost = calculate_arti_boosts(best_arti_sets)
+    Logger.log(eb_arti_stones)
+    Logger.log(best_arti_sets)
+    Logger.log(arti_boost)
 }

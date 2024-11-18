@@ -1,5 +1,3 @@
-import * as saveTypes from "../typings/saveTypes"
-
 export class GameSave {
     readonly save: saveTypes.Root;
 
@@ -97,7 +95,7 @@ export class GameSave {
     get_path(path: string): any {
         let paths : any = path.split(".")
         let current_item : any = this.gamesave
-        for (var i = 0; i < paths.length; i++) {
+        for (let i = 0; i < paths.length; i++) {
             if (!current_item[paths[i]]) {
                 return null
             } else {

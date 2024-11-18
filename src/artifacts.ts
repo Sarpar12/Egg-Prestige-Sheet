@@ -8,8 +8,8 @@ const PROP = 39
 const SOUL = 34
 
 // See https://github.com/elgranjero/EggIncProtos/tree/main/docs#artifactspecname 
-// for which id's correspond with what
-const EB_ARTFIACT_IDS : {[key : number] : string} = {
+// for which ids correspond with what
+const EB_ARTIFACT_IDS : {[key : number] : string} = {
     10 : "Book of Basan",
     34 : "Soul Stone",
     39 : "Prophecy Stone"
@@ -37,6 +37,8 @@ const SOUL_EFFECT : {[key : number] : {[key :number] : number}} = {
 }
 
 /**
+ * CONFIRMED WORKING - 11/18/24
+ *
  * finds all artifacts and stones in the inventory that boost eb
  * 
  * @param inventory the inventory found in the save file
@@ -44,22 +46,23 @@ const SOUL_EFFECT : {[key : number] : {[key :number] : number}} = {
  */
 // @ts-ignore: namespace doesn't matter in gas
 function find_eb_arti_stones(inventory : saveTypes.InventoryItemsList[]) {
-    let filtered_artis = inventory.filter(item => Object.keys(EB_ARTFIACT_IDS).map(Number).includes(item.artifact.spec.name))
-    return filtered_artis
+    return inventory.filter(item => Object.keys(EB_ARTIFACT_IDS).map(Number).includes(item.artifact.spec.name))
 }
 
 /**
+ * CONFIRMED WORKING 11/18/24
+ *
  * calculates the best version of each artifact/stone
  * @param artifact_list the list of artifacts(should be presorted from previous functions)
- * @returns an object with properties of each object's name and it's highest level found
+ * @returns an object with properties of each object's name, and it's the highest level found
  */
-// @ts-ignore: namespace doens't matter
-function find_best_artifacts(artifact_list: saveTypes.InventoryItemsList[]): { [key: number]: { level: number, rarity: number } } {
-    return artifact_list.reduce<{ [key: number]: { level: number, rarity: number } }>((acc, artifact) => {
+// @ts-ignore: namespace doesn't matter
+function find_best_artifacts(artifact_list: saveTypes.InventoryItemsList[]): { [key: number]: { level: number, rarity: number, amount: number} } {
+    return artifact_list.reduce<{ [key: number]: { level: number, rarity: number, amount : number } }>((acc, artifact) => {
         const arti_spec = artifact.artifact.spec;
         // If the artifact name is not in the accumulator or if the current level is higher, update the accumulator
         if (!acc[arti_spec.name] || arti_spec.level > acc[arti_spec.name].level) {
-            acc[arti_spec.name] = { level: arti_spec.level, rarity: arti_spec.rarity };
+            acc[arti_spec.name] = { level: arti_spec.level, rarity: arti_spec.rarity, amount: artifact.quantity };
         }
         return acc;
     }, {}); // Initial value of the accumulator is an empty object
@@ -91,7 +94,7 @@ function calculate_arti_boosts(artifact_list : {[key : number] : {level : number
 }
 
 /**
- * finds an given artifact by it's id number
+ * finds a given artifact by its id number
  * @param artifact_inv the artifact inventory
  * @param id the id of the artifact to find
  * @returns saveTypes.InventoryItemList
@@ -107,7 +110,7 @@ function find_artifact_by_id(artifact_inv : saveTypes.InventoryItemsList[], id :
 function contains_eb_stones(arti : saveTypes.Artifact) {
     for (let i = 0; arti.stonesList.length; i++)  {
         let stone_name = arti.stonesList[i].name
-        if (EB_ARTFIACT_IDS[stone_name]) {
+        if (EB_ARTIFACT_IDS[stone_name]) {
             return true
         }
     }
@@ -120,10 +123,7 @@ function contains_eb_stones(arti : saveTypes.Artifact) {
  * @returns boolean true or false
  */
 function is_eb_artifact(arti : saveTypes.Artifact) {
-    if (EB_ARTFIACT_IDS[arti.spec.name]) {
-        return true
-    }
-    return false
+    return !!EB_ARTIFACT_IDS[arti.spec.name];
 }
 
 /**
