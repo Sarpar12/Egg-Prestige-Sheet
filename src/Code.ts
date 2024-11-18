@@ -56,7 +56,6 @@ function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
     if (range.getSheet().getName() === "Calculations" && range.getA1Notation() === "B1") {
         let sheet = get_sheet("Calculations")
         let selectedRole = sheet.getRange("B1").getValue()
-        // @ts-expect-error: namespace doesn't matter
         sheet.getRange("B2").setValue(role_to_EB(selectedRole))
         custom_number(false, 2, 2, "Calculations")
     }
@@ -159,17 +158,6 @@ function showEID() {
 }
 
 /**
- * returns the specified data in a list
- *
- * @return arr[]: [float, float, int, int, string, float, float]
- * @param save a GameSave object
- */
-function get_data(save : GameSave) {
-    // [Eb%, Soul Eggs, EOP, prestiges, time of backup]
-    return [save.EB, save.SE, save.PE, save.prestiges, convert_time(save.time), save.MER, save.JER]
-}
-
-/**
  * converts a unix timestamp into a human-readable string
  * 
  * @param timestamp unix timestamp
@@ -218,7 +206,8 @@ function refresh_auto() {
  * @param automatic if the function wa run from an automatic call
  */
 function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
-    let save = new GameSave(get_script_properties('EID'))
+    // @ts-ignore
+    let save : myClasses.GameSave = new GameSave(get_script_properties('EID'))
     // Setting soul and prop bonus er's here 
     set_script_property('SE_ER', "" + save.soul_bonus)
     set_script_property('PE_ER', "" + save.prop_bonus)
@@ -268,7 +257,6 @@ function sheet_fill(data: any[]) {
     update_MER_wrapper()
     set_prev_header_values(data[0])
     update_current_values(data[0])
-    // @ts-expect-error: namespace doesn't matter
     create_role_dropdown([EB_to_role(data[0][0])])
 }
 
@@ -341,7 +329,7 @@ function dupe_status() {
  * @param save an instance of GameSave
  * @returns true if the new eb is the same as the old eb
  */
-function check_dupe(save: GameSave) {
+function check_dupe(save: myClasses.GameSave) {
     //EID = PropertiesService.getScriptProperties().getProperty('EID')
     //var response = JSON.parse(UrlFetchApp.fetch(`https://eiapi-production.up.railway.app/callkev?EID=${EID}`).getContentText())
     const sheet = get_sheet("Prestige Data")
@@ -526,7 +514,6 @@ function create_prev_header() {
  * @param data the data param from sheet_fill - [eb, se, pe, prestiges, time, mer, jer]
  */
 function set_prev_header_values(data : any[]) {
-    // @ts-expect-error: namespace doesn't matter
     let trimmed_data = [EB_to_role(data[0]), data[0], data[6], data[5], data[3]]
     let sheet = get_sheet("Calculations")
     let p_sheet = get_sheet("Prestige Data")
@@ -556,7 +543,6 @@ function set_prev_header_values(data : any[]) {
 function update_current_values(data : any[]) {
     let sheet = get_sheet("Calculations")
     let range = sheet.getRange("B6:B9")
-    // @ts-expect-error: namespace doesn't matter
     let current_values = [[EB_to_role(data[0])], [data[0]], [data[6]], [data[5]]]
 
     range.setValues(current_values)
@@ -567,7 +553,6 @@ function update_current_values(data : any[]) {
  * creates the role dropdown, if no data validation rule exists for that cell
  */
 function create_role_dropdown(data : (string)[]) {
-    // @ts-expect-error: namespace doesn't matter
     let role_list : string[] = ALL_ROLES.slice(ALL_ROLES.indexOf(data[0]) + 1, -1) // Remove infinifarmer from the list
     let cell = get_sheet("Calculations").getRange("B1")
     create_data_validation_dropdown(cell, role_list)
@@ -589,8 +574,8 @@ function create_dv_jer_mer() {
  * @returns [string, number, number, number], the current role, eb, jer, mer, values
  */
 function get_current_values() : (string | number)[] {
-    let save = new GameSave(get_script_properties("EID"))
-    // @ts-expect-error: namespace doesn't matter
+    // @ts-ignore
+    let save : myClasses.GameSave = new GameSave(get_script_properties("EID"))
     return [EB_to_role(save.EB), save.EB, save.JER, save.MER]
 }
 
@@ -607,7 +592,6 @@ function update_MER_wrapper() {
     let prestige_sheet = get_sheet("Prestige Data")
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let target_mer = sheet.getRange("B4").getValue()
-    // @ts-expect-error: namespace doesn't matter
     let mer_combos = calculate_sepe_target_MER(target_mer, sepe[0][1], sepe[0][0])
     
     // Reset Previous Data
@@ -636,9 +620,7 @@ function update_EB_wrapper() {
     }
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let sepe_bonus = [parseInt(get_script_properties('SE_ER')), parseInt(get_script_properties('PE_ER'))]
-    // @ts-expect-error: namespace doesn't matter
     let target_EB : number = role_to_EB(sheet.getRange("B1").getValue())
-    // @ts-expect-error: namespace doesn't matter
     let combos = calculate_SE_EB_target_combos(target_EB, sepe[0][0], sepe[0][1], sepe_bonus[0], sepe_bonus[1])
 
     // Clear previous data
@@ -668,7 +650,6 @@ function update_JER_wrapper() {
     }
     let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
     let target_mer = sheet.getRange("B3").getValue()
-    // @ts-expect-error: namespace doesn't matter
     let jer_combos = calculate_combos_for_target_jer(target_mer, sepe[0][1], sepe[0][0])
     
     // Reset Previous Data
@@ -691,7 +672,8 @@ function update_JER_wrapper() {
 ////////////////////////////
 
 function test_artifact_sets() {
-    let save = new GameSave(get_script_properties("EID"))
+    // @ts-ignore
+    let save : myClasses.GameSave = new GameSave(get_script_properties("EID"))
     const eb_arti_stones = find_eb_arti_stones(save.get_arti_inv);
     const best_arti_sets = find_best_artifacts(eb_arti_stones);
     const arti_boost = calculate_arti_boosts(best_arti_sets)

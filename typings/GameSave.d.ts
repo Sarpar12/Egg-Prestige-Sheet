@@ -1,12 +1,8 @@
-export {}
-
-declare namespace GameSave {
+declare namespace myClasses {
     import SheetDataArray = myTypes.SheetDataArray;
 
     export interface GameSave {
         readonly save: saveTypes.Root;
-
-        constructor(EID: string) : any;
 
         get gamesave(): saveTypes.Root;
         get SE(): number;

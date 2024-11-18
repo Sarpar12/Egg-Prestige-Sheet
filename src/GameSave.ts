@@ -1,4 +1,4 @@
-export class GameSave implements GameSave {
+export class GameSave implements myClasses.GameSave {
     readonly save: saveTypes.Root;
 
     /**
@@ -155,7 +155,7 @@ export class GameSave implements GameSave {
     /**
      * Getter for the sheet data filling
      */
-    get sheetData() : SheetDataArray {
+    get sheetData() : myTypes.SheetDataArray {
         return {
             EB: this.EB, SE: this.SE, PE: this.PE, Prestiges: this.prestiges,
             Time: convert_time(this.time), MER: this.MER, JER: this.JER
