@@ -1,9 +1,9 @@
-export class GameSave {
+export class GameSave implements GameSave {
     readonly save: saveTypes.Root;
 
     /**
-     * initializes the save variable of this instance 
-     * 
+     * initializes the save variable of this instance
+     *
      * @param EID the EID of the current user of this script
      */
     constructor (EID: string) {
@@ -12,42 +12,42 @@ export class GameSave {
 
     /**
      * Returns the JSON save of the user
-     * 
+     *
      * @returns JSON save file
      */
     get gamesave() : saveTypes.Root {return this.save}
 
     /**
      * Returns the se of the save
-     * 
-     * @returns SE count as number 
+     *
+     * @returns SE count as number
      */
     get SE(): number { return this.save.game.soulEggsD }
-    
+
     /**
      * Returns pe count of the save
-     * 
+     *
      * @returns PE count as number
      */
     get PE(): number { return this.save.game.eggsOfProphecy }
-    
+
     /**
      * Returns the number of prestiges
-     * 
+     *
      * @returns Prestige Number as number
      */
     get prestiges(): number { return this.save.stats.numPrestiges }
-    
+
     /**
-     * Gets the UNIX time of save 
-     * 
+     * Gets the UNIX time of save
+     *
      * @returns UNIX time of save as number
      */
     get time(): number { return Math.floor(this.save.settings.lastBackupTime) }
-  
+
     /**
      * Returns a JSON of the ER in the save
-     * 
+     *
      * @returns ER
      */
     get ER() : saveTypes.EpicResearchList[] { return this.save.game.epicResearchList }
@@ -68,18 +68,18 @@ export class GameSave {
 
     /**
      * gets the soul bonus epic research amount
-     * 
+     *
      * @returns the soul bonus ER levels
      */
-    get soul_bonus() : number { 
+    get soul_bonus() : number {
         let soulER = this.ER.find((research : {id : string, level : number}) => research.id === "soul_eggs")
         // If no item is found, then assume that there is 0 ER
-        return soulER ? soulER.level : 0   
+        return soulER ? soulER.level : 0
     }
 
     /**
      * returns the prop bonus ER level
-     * 
+     *
      * @returns prop bonus ER level
      */
     get prop_bonus() : number {
@@ -107,48 +107,58 @@ export class GameSave {
             }
         }
     }
-    
+
     /**
      * Calculates and returns the eb of the save
-     * 
+     *
      * @returns the eb of the save as number
      */
     calc_EB(): number {
         return (this.SE*(10+this.soul_bonus))*(((1.05 + (0.01 * this.prop_bonus))**this.PE))
     }
-    
+
     /**
      * returns the MER of the save
      *
      * @returns MER of the save as number
      */
     calc_MER(): number { return (((91 * (Math.log10(this.SE) - 18)) + 200 - this.PE) / 10) }
-    
+
     /**
      * returns the JER of the save
-     * 
+     *
      * @returns the JER of the save as number
      */
     calc_JER(): number { return (((0.1519*Math.log10(this.SE)**3 - 4.8517*Math.log10(this.SE)**2 + 48.248*Math.log10(this.SE) - 143.46)/this.PE)*100*this.PE+100*49)/(this.PE+100)}
-    
+
     /**
      * Wrapper get for calc_EB()
-     * 
+     *
      * @returns the the EB of the save as number
      */
     get EB(): number { return this.calc_EB() }
-  
+
     /**
      * Wrapper for calc_MER()
-     * 
+     *
      * @returns the MER of the save as number
      */
     get MER(): number { return this.calc_MER() }
-  
+
     /**
      * Wrapper for calc_JER()
-     * 
+     *
      * @returns JER of save as number
     */
     get JER(): number { return this.calc_JER() }
+
+    /**
+     * Getter for the sheet data filling
+     */
+    get sheetData() : SheetDataArray {
+        return {
+            EB: this.EB, SE: this.SE, PE: this.PE, Prestiges: this.prestiges,
+            Time: convert_time(this.time), MER: this.MER, JER: this.JER
+        };
+    }
 }

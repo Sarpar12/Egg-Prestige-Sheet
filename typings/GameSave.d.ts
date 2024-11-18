@@ -1,10 +1,12 @@
 export {}
 
-declare global {
-    class GameSave {
+declare namespace GameSave {
+    import SheetDataArray = myTypes.SheetDataArray;
+
+    export interface GameSave {
         readonly save: saveTypes.Root;
 
-        constructor(EID: string);
+        constructor(EID: string) : any;
 
         get gamesave(): saveTypes.Root;
         get SE(): number;
@@ -23,5 +25,6 @@ declare global {
         get EB(): number;
         get MER(): number;
         get JER(): number;
+        get sheetData() : SheetDataArray;
     }
 }
