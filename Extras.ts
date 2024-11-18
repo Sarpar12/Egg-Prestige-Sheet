@@ -46,10 +46,10 @@ function custom_number(is_se:boolean, row: number, col: number, sheet_name: stri
     let sheet: GoogleAppsScript.Spreadsheet.Sheet = get_sheet(sheet_name)
     // toExponential() returns as string object
     let number: string = sheet.getRange(row, col).getValue().toExponential()
-    let ending: string = number.slice(number.search(/[E]/i)+2, number.length)
+    let ending: string = number.slice(number.search(/E/i)+2, number.length)
     let div_ending = parseInt(ending.valueOf()) - parseInt(ending.valueOf()) % 3
     if (abbreviations.has(`+${div_ending}`)) {
-        var str_format = `[>=1E+${div_ending}]0.000${",".repeat(div_ending/3)}"${abbreviations.get(`+${div_ending}`)}${string_postfix}";`
+        const str_format = `[>=1E+${div_ending}]0.000${",".repeat(div_ending/3)}"${abbreviations.get(`+${div_ending}`)}${string_postfix}";`
         sheet.getRange(row, col).setNumberFormat(str_format)
     } else {
         sheet.getRange(row, col).setNumberFormat("0")
@@ -119,8 +119,11 @@ function create_data_validation_numerical(cell : GoogleAppsScript.Spreadsheet.Ra
 
 /**
  * resets 2 columns, starting at a specified row
- * @param column the column to reset
+ * @param start_column start col
+ * @param col_number number of columns
  * @param start_row the starting row
+ * @param row_number number of rows
+ * @param sheet_name the name of the sheet
  */
 function reset_sheet_column(start_column : number, 
                             col_number : number, 
