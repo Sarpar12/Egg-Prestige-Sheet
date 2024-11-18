@@ -212,7 +212,7 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
     set_script_property('SE_ER', "" + save.soul_bonus)
     set_script_property('PE_ER', "" + save.prop_bonus)
 
-    let data = [get_data(save)]
+    let data = save.sheetData
     if (dupe_enabled) {
         sheet_fill(data)
         set_update_time()
@@ -234,19 +234,18 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
  *
  * @param data : [eb, se, pe, prestiges, time, mer, jer]
  */
-function sheet_fill(data: any[]) {
+function sheet_fill(data : myTypes.SheetDataArray) {
+    // Setting Up Sheets
     const sheet = get_sheet("Prestige Data");
     let p_sheet = get_sheet('Calculations')
-    if (sheet.getLastRow() === 0) {
-        set_sheet_header()
-    }
-    if (p_sheet.getLastRow() === 0) {
-        set_calc_header()
-    }
-    data[0].push("")
-    sheet.getRange(sheet.getLastRow() + 1, 1, 1, data[0].length).setValues(data)
+    if (sheet.getLastRow() === 0) { set_sheet_header(); }
+    if (p_sheet.getLastRow() === 0) { set_calc_header(); }
+    // Actually using the data
+    const dataList = convertSheetDataArray(data)
+    dataList.push("")
+    sheet.getRange(sheet.getLastRow() + 1, 1, 1, dataList.length).setValues([dataList])
         .setHorizontalAlignment('left')
-    set_color(sheet, sheet.getLastRow(), 1, data[0])
+    set_color(sheet, sheet.getLastRow(), 1, dataList)
     custom_number(false, sheet.getLastRow(), 1, "Prestige Data")
     custom_number(true, sheet.getLastRow(), 2, "Prestige Data")
     link_latest()
@@ -255,9 +254,9 @@ function sheet_fill(data: any[]) {
     update_EB_wrapper()
     update_JER_wrapper()
     update_MER_wrapper()
-    set_prev_header_values(data[0])
-    update_current_values(data[0])
-    create_role_dropdown([EB_to_role(data[0][0])])
+    set_prev_header_values(data)
+    update_current_values(data)
+    create_role_dropdown([EB_to_role(dataList[0] as number)])
 }
 
 /**

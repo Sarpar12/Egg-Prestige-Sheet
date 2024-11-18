@@ -39,7 +39,7 @@ function custom_number(is_se:boolean, row: number, col: number, sheet_name: stri
         ['+27', 'o'], // Octillion
         ['+30', 'N'], // Nonillion
         ['+33', 'd'], // decillion
-        ['+36', 'U'], // Undeillion
+        ['+36', 'U'], // Undecillion
     ]);
     let string_postfix: string = "";
     if (!is_se) { string_postfix = "%"}
@@ -132,4 +132,12 @@ function reset_sheet_column(start_column : number,
                             sheet_name : string) {
     let sheet = get_sheet(sheet_name)
     sheet.getRange(start_row, start_column, row_number, col_number).clear()
+}
+
+/**
+ * converts the array into an actual list, which google sheets will then use
+ * @param array the input SheetsDataArray object
+ */
+function convertSheetDataArray(array : myTypes.SheetDataArray) {
+    return [array.EB, array.SE, array.PE, array.Prestiges, array.Time, array.MER, array.JER];
 }
