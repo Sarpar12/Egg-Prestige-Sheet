@@ -69,3 +69,83 @@ function find_best_artifacts(artifact_list: saveTypes.InventoryItemsList[]): { [
         return acc;
     }, {}); // Initial value of the accumulator is an empty object
 }
+
+/**
+ * helper function, maps an ID into an inventory item
+ * @param itemId the item id to find
+ * @param inventory the inventory of the player
+ * @returns saveTypes.InventoryItemsList the object the was found
+ */
+function get_arti_from_id(itemId : number, inventory : saveTypes.InventoryItemsList[]) : saveTypes.InventoryItemsList {
+    return inventory.find((artifact) => itemId === artifact.itemId)
+}
+
+/**
+ * checks if a given set is an eb set using the following criteria
+ *  - contains Book of Basan
+ *  - contains Prop Stone(min x1)
+ *  - contains Soul Stone(min x1)
+ * @param arti_list the list of artifacts
+ * @returns {boolean} if a given set is a eb set
+ */
+function is_eb_set(arti_list : saveTypes.InventoryItemsList[]) : boolean {
+    if (!(arti_list)) {
+        throw new Error('arti_list not found');
+    }
+    let valid_set = false
+    arti_list.forEach((arti: saveTypes.InventoryItemsList) => {
+        const name = arti.artifact.spec.name;
+        const stones = arti.artifact.stonesList;
+
+        if (EB_ARTIFACT_IDS[name]) {
+            valid_set = true;
+            return valid_set;
+        }
+
+        stones.forEach(stone => {
+            if (EB_ARTIFACT_IDS[stone.name]) {
+                valid_set = true;
+                return valid_set;
+            }
+        })
+    })
+    return valid_set
+}
+
+/**
+ * finds all the eb sets stored in the save and returns them
+ *
+ * **Note:** the type is converted from {@link saveTypes.SavedArtifactSetsList[]}
+ * to {@link saveTypes.InventoryItemsList[][]}
+ *
+ * @param saved_sets the sets saved in the save file in
+ * @param inventory the inventory of the playser
+ * @returns eb set in InventoryItemsList[][] format
+ */
+function find_all_eb_sets(saved_sets : saveTypes.SavedArtifactSetsList[], inventory : saveTypes.InventoryItemsList[]) : saveTypes.InventoryItemsList[][]  {
+    const eb_sets : saveTypes.InventoryItemsList[][] = [];
+    saved_sets.forEach((saved_set) => {
+        const saved_artifacts = saved_set.slotsList.map((slot) => get_arti_from_id(slot.itemId, inventory))
+        eb_sets.push(saved_artifacts);
+    })
+    return eb_sets;
+}
+
+/**
+ * determines the effectiveness of a set
+ * @param arti_set the set to calculate with
+ * @returns the decimal boost + 1
+ */
+function determine_set_boost(arti_set : saveTypes.InventoryItemsList[]) : number {
+
+}
+
+/**
+ * returns the set in the {@link saveTypes.InventoryItemsList[][]} format
+ * separate function will be used to extract the stones and book from it
+ * @param gameSave
+ * @param inventory
+ */
+function find_best_eb_set(gameSave : myClasses.GameSave, inventory : saveTypes.InventoryItemsList[]) : saveTypes.InventoryItemsList[] {
+    const all_eb_sets = find_all_eb_sets(gameSave.arti_sets, inventory);
+}
