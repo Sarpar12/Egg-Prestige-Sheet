@@ -13,4 +13,10 @@ declare namespace myTypes {
         soul_boost : number
         prop_boost : number
     }
+
+    export interface SheetBoostData {
+        book : {level : number, rarity : number} // <level, rarity>
+        soul_stones : {level : number, amount : number}[] // [<amount, level>]
+        prop_stones : {level : number, amount : number}[] // [<amount, level>]
+    }
 }

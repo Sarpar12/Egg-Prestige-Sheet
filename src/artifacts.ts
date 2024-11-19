@@ -188,3 +188,62 @@ function find_best_eb_set(gameSave : myClasses.GameSave, inventory : saveTypes.I
     }
     return all_eb_sets[best_boost.index];
 }
+
+// UI related code after this section
+
+/**
+ * boosts from information selected in the spreadsheet
+ * @param boostData the data - see interface for actual data format
+ * @returns the boost effect in {@link myTypes.CumulBoost}
+ */
+function determine_set_boost_extra(boostData : myTypes.SheetBoostData) : myTypes.CumulBoost {
+    const data_object : myTypes.CumulBoost = {
+        soul_boost : 0,
+        prop_boost : 0,
+    }
+    data_object.prop_boost += BOOK_EFFECT[boostData.book.level][boostData.book.rarity]
+    boostData.prop_stones.forEach((stoneList) => {
+        data_object.prop_boost += (PROP_EFFECT[stoneList.level][0] * stoneList.amount)
+    })
+    boostData.soul_stones.forEach((stoneList) => {
+        data_object.soul_boost += (SOUL_EFFECT[stoneList.level][0] * stoneList.amount)
+    })
+    return data_object;
+}
+
+/**
+ * Simply creates the list for the dropdown so it's not global const
+ */
+function prop_stone_dropdown_information() : string[] {
+    return [
+        "Prophecy Stone - 0.05%",
+        "Eggsquisite Prophecy Stone - 0.1%",
+        "Radiant Prophecy Stone - 1%"
+    ]
+}
+
+/**
+ * creates dropdown information
+ */
+function soul_stone_dropdown_information() : string[] {
+    return [
+        "Soul Stone - 5%",
+        "Eggsquisite Soul Stone - 10%",
+        "Radiant Soul Stone - 25%"
+    ]
+}
+
+/**
+ * creates dropdown information
+ */
+function book_dropdown_information() : string[] {
+    return [
+        "T1 Book of Basan - 0.25%",
+        "T2 Collectors Book of Basan - 0.5%",
+        "T3C Fortified Book of Basan - 0.75%",
+        "T3E Fortified Book of Basan - 0.8%",
+        "T4C Glided Book of Basan - 1%",
+        "T4E Glided Book of Basan - 1.1%",
+        "T4L Glided Book of Basan - 1.2%"
+    ]
+}

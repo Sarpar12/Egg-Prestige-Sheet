@@ -326,7 +326,7 @@ function solve_cubic_equation(a : number, b : number, c : number, d : number) : 
  * @param arti_effects the effects of artifacts and stones
  */
 function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : number, arti_effects: myTypes.CumulBoost) {
-    return ((10 + se_bonus) * (1 + arti_effects["soul_boost"])) * ((1.05 + (0.01 * pe_bonus) + arti_effects["prop_boost"]) ** pe)
+    return ((10 + se_bonus) * (1 + arti_effects.soul_boost)) * ((1.05 + (0.01 * pe_bonus) + arti_effects.prop_boost) ** pe)
 }
 
 /**
