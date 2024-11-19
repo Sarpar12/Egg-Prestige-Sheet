@@ -3,12 +3,10 @@
 // For artifact calculations only
 //
 //////////////////////
-const BOOK = 10
-const PROP = 39
-const SOUL = 34
-
-// See https://github.com/elgranjero/EggIncProtos/tree/main/docs#artifactspecname 
+// See https://github.com/elgranjero/EggIncProtos/tree/main/docs#artifactspecname
 // for which ids correspond with what
+import CumulBoost = myTypes.CumulBoost;
+
 const EB_ARTIFACT_IDS : {[key : number] : string} = {
     10 : "Book of Basan",
     34 : "Soul Stone",
@@ -132,20 +130,52 @@ function find_all_eb_sets(saved_sets : saveTypes.SavedArtifactSetsList[], invent
 }
 
 /**
+ * Note: this is not the actual effect, just
+ * an overall number that will be used
+ *
  * determines the effectiveness of a set
  * @param arti_set the set to calculate with
  * @returns the decimal boost + 1
  */
-function determine_set_boost(arti_set : saveTypes.InventoryItemsList[]) : number {
+function determine_set_boost(arti_set : saveTypes.InventoryItemsList[]) : myTypes.CumulBoost {
+    const data_object : myTypes.CumulBoost = {
+        soul_boost : 0,
+        prop_boost : 0,
+    }
+    arti_set.forEach((arti) => {
+        const name = arti.artifact.spec.name
+        const rarity = arti.artifact.spec.rarity
+        const stones = arti.artifact.stonesList
+        if (EB_ARTIFACT_IDS[arti.artifact.spec.name] === "Book of Basan") {
+            data_object.prop_boost += BOOK_EFFECT[name][rarity]
+        }
 
+        stones.forEach((stone) => {
+            if (EB_ARTIFACT_IDS[stone.name] === "Soul Stone") {
+                data_object.soul_boost += SOUL_EFFECT[name][rarity]
+            }
+            if (EB_ARTIFACT_IDS[stone.name] === "Prophecy Stone") {
+                data_object.prop_boost += PROP_EFFECT[name][rarity]
+            }
+        })
+    })
+    return data_object;
 }
 
 /**
- * returns the set in the {@link saveTypes.InventoryItemsList[][]} format
+ * returns the set as a {@link saveTypes.InventoryItemsList[][]} format
+ *
  * separate function will be used to extract the stones and book from it
- * @param gameSave
- * @param inventory
+ * @param gameSave the player save
+ * @param inventory the inventory of the player
  */
 function find_best_eb_set(gameSave : myClasses.GameSave, inventory : saveTypes.InventoryItemsList[]) : saveTypes.InventoryItemsList[] {
     const all_eb_sets = find_all_eb_sets(gameSave.arti_sets, inventory);
+    let best_boost_index = -1
+    for (let i = 0; i < all_eb_sets.length; i++) {
+        const set_boost = determine_set_boost(all_eb_sets[i])
+        let total_boost =
+    }
+
+    return best_eb_set
 }

@@ -8,4 +8,9 @@ declare namespace myTypes {
         MER : number
         JER : number
     }
+
+    export interface CumulBoost {
+        soul_boost : number
+        prop_boost : number
+    }
 }

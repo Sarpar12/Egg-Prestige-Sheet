@@ -48,7 +48,7 @@ const ALL_ROLES : string[] = [
 
 /**
  * converts an earnings bonus into a farmer role
- * @param EB the earnings bonus, as an number
+ * @param EB the earnings bonus, as a number
  * @returns string, the farmer role
  */
 function EB_to_role(EB: number) : string {
@@ -62,7 +62,7 @@ function EB_to_role(EB: number) : string {
 }
 
 /**
- * converts a given role into a eb role
+ * converts a given role into an eb role
  * @param role the role selected
  */
 function role_to_EB(role: string) : number{
@@ -72,12 +72,12 @@ function role_to_EB(role: string) : number{
 }
 
 /**
- * returns the se and pe bonus as an list
- * @param gameSave the save file of the user
+ * returns the se and pe bonus as a list
  * @returns a number list of [soul bounus, prop bonus]
  */
 function get_se_pe_bonus() : number[] {
-    let gameSave : GameSave = new GameSave(get_script_properties('EID'))
+    // @ts-ignore
+    let gameSave : myClasses.GameSave = new GameSave(get_script_properties('EID'))
     return [gameSave.soul_bonus, gameSave.prop_bonus]
 }
 

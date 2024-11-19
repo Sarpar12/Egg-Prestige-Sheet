@@ -4,6 +4,12 @@ declare namespace myClasses {
     export interface GameSave {
         readonly save: saveTypes.Root;
 
+        /**
+         * There is no constructors in interface
+         * will @ts-ignore/@ts-expect-error
+         * all constructor calls.
+         */
+
         get gamesave(): saveTypes.Root;
         get SE(): number;
         get PE(): number;
