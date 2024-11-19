@@ -172,16 +172,14 @@ function calculate_SE_EB_target_combos(target_eb : number, current_se : number, 
     }
 
     // Getting the actual player values
-    let player_combo = combos
-        .map(({pe, se}) => 
+    return combos
+        .map(({pe, se}) =>
             ({
                 pe: pe - current_pe,
                 se: Math.max(se - current_se, 0)
             })
         )
-        .filter(({pe}) => pe >= 0);
-
-    return player_combo
+        .filter(({pe}) => pe >= 0)
 }
 
 // Anything after this is for solving JER
@@ -225,8 +223,7 @@ function calculate_se_for_target_jER(jer : number, pe : number) {
     if (logSE >= ALL_ROLES.length)
         return null;
 
-    const se = Math.pow(10, logSE);
-    return se;
+    return Math.pow(10, logSE);
 }
 
 /**
@@ -352,14 +349,15 @@ function calculate_clothed_SE_for_target(target_EB : number, pe : number, pe_bon
 /**
  * finds combinations of se and pe that would reach a specified combination
  * @param target_eb the eb to be reached
- * @param current_se the current amount of se 
+ * @param current_se the current amount of se
  * @param current_pe the current amount of pe
  * @param se_bonus se bonus researched
  * @param pe_bonus pe bonus researched
+ * @param arti_effects the effect of artifacts
  * @returns list of objects containing pe and se amounts
  */
 function calculate_clothed_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
-    // Initial Comboes
+    // Initial Combos
     let combos = []
     let pe = 0
     while (true) {

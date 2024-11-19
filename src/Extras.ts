@@ -58,12 +58,12 @@ function custom_number(is_se:boolean, row: number, col: number, sheet_name: stri
 
 /**
  * wrapper function for custom number, simply runs a loop
- * @param is_se is the custom number for an se or eb
+ * @param is_se is the custom number for a se or eb
  * @param start_row the starting row
  * @param end_row the ending row
  * @param start_col the starting column
  * @param end_col the ending column
- * @param sheet_name the name of the seet to set range for
+ * @param sheet_name the name of the set to set range for
  */
 function custom_number_wrapper(is_se : boolean, start_row : number, end_row : number, start_col : number, end_col: number, sheet_name : string) {
     for (let i = start_row; i <= end_row; i++) {
@@ -110,7 +110,7 @@ function create_data_validation_dropdown(cell : GoogleAppsScript.Spreadsheet.Ran
  * creates a data validation to make sure the input is a number
  * @param cell the cell to create a data validation in
  * @param value1 the lower value
- * @param value2 the highe value(limit)
+ * @param value2 the higher value(limit)
  */
 function create_data_validation_numerical(cell : GoogleAppsScript.Spreadsheet.Range, value1 : number, value2: number) {
     let data_validation_rule = SpreadsheetApp.newDataValidation().requireNumberBetween(value1, value2).build()
@@ -135,7 +135,7 @@ function reset_sheet_column(start_column : number,
 }
 
 /**
- * converts the array into an actual list, which google sheets will then use
+ * converts the array into an actual list, which Google sheets will then use
  * @param array the input SheetsDataArray object
  */
 function convertSheetDataArray(array : myTypes.SheetDataArray) {

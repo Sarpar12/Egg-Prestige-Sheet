@@ -5,15 +5,13 @@
 //////////////////////
 // See https://github.com/elgranjero/EggIncProtos/tree/main/docs#artifactspecname
 // for which ids correspond with what
-import CumulBoost = myTypes.CumulBoost;
-
-const EB_ARTIFACT_IDS : {[key : number] : string} = {
+const EB_ARTIFACT_IDS : Record<number, string> = {
     10 : "Book of Basan",
     34 : "Soul Stone",
     39 : "Prophecy Stone"
 }
 
-const BOOK_EFFECT : {[key : number] : {[key : number] : number}} = {
+const BOOK_EFFECT : Record<number, Record<number, number>> = {
     0 : {0 : 0.0025},
     1 : {0 : 0.005},
     2 : {0 : 0.0075, 2 : 0.008},
@@ -22,13 +20,13 @@ const BOOK_EFFECT : {[key : number] : {[key : number] : number}} = {
 
 // No, stones don't have rarities, but it makes the code easier to read 
 
-const PROP_EFFECT : {[key : number] : {[key : number] : number}} = {
+const PROP_EFFECT : Record<number, Record<number, number>> = {
     0 : {0 : 0.0005},
     1 : {0 : 0.001},
     2 : {0 : 0.0015}
 }
 
-const SOUL_EFFECT : {[key : number] : {[key :number] : number}} = {
+const SOUL_EFFECT : Record<number, Record<number, number>> = {
     0 : {0 : 0.05},
     1 : {0 : 0.1},
     2 : {0 : 0.25},
@@ -54,7 +52,6 @@ function find_eb_arti_stones(inventory : saveTypes.InventoryItemsList[]) {
  * @param artifact_list the list of artifacts(should be presorted from previous functions)
  * @returns an object with properties of each object's name, and it's the highest level found
  */
-// @ts-ignore: namespace doesn't matter
 function find_best_artifacts(artifact_list: saveTypes.InventoryItemsList[]): { [key: number]: { level: number, rarity: number, amount: number} } {
     return artifact_list.reduce<{
         [key: number]: { level: number, rarity: number, amount: number }
@@ -84,7 +81,7 @@ function get_arti_from_id(itemId : number, inventory : saveTypes.InventoryItemsL
  *  - contains Prop Stone(min x1)
  *  - contains Soul Stone(min x1)
  * @param arti_list the list of artifacts
- * @returns {boolean} if a given set is a eb set
+ * @returns {boolean} if a given set is an eb set
  */
 function is_eb_set(arti_list : saveTypes.InventoryItemsList[]) : boolean {
     if (!(arti_list)) {
@@ -117,7 +114,7 @@ function is_eb_set(arti_list : saveTypes.InventoryItemsList[]) : boolean {
  * to {@link saveTypes.InventoryItemsList[][]}
  *
  * @param saved_sets the sets saved in the save file in
- * @param inventory the inventory of the playser
+ * @param inventory the inventory of the player
  * @returns eb set in InventoryItemsList[][] format
  */
 function find_all_eb_sets(saved_sets : saveTypes.SavedArtifactSetsList[], inventory : saveTypes.InventoryItemsList[]) : saveTypes.InventoryItemsList[][]  {
@@ -126,7 +123,7 @@ function find_all_eb_sets(saved_sets : saveTypes.SavedArtifactSetsList[], invent
         const saved_artifacts = saved_set.slotsList.map((slot) => get_arti_from_id(slot.itemId, inventory))
         eb_sets.push(saved_artifacts);
     })
-    return eb_sets;
+    return eb_sets.filter((set) => is_eb_set(set));
 }
 
 /**
