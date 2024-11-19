@@ -123,7 +123,15 @@ function find_all_eb_sets(saved_sets : saveTypes.SavedArtifactSetsList[], invent
         const saved_artifacts = saved_set.slotsList.map((slot) => get_arti_from_id(slot.itemId, inventory))
         eb_sets.push(saved_artifacts);
     })
-    return eb_sets.filter((set) => is_eb_set(set));
+    return eb_sets.filter((set) => {
+        // Check if all artifacts in the set are defined using nullish coalescing
+        const allArtifactsDefined = set.every(artifact =>
+            (artifact ?? null) !== null
+        );
+
+        // Only call is_eb_set if all artifacts are defined
+        return allArtifactsDefined && is_eb_set(set);
+    });
 }
 
 /**
@@ -140,19 +148,18 @@ function determine_set_boost(arti_set : saveTypes.InventoryItemsList[]) : myType
         prop_boost : 0,
     }
     arti_set.forEach((arti) => {
-        const name = arti.artifact.spec.name
         const rarity = arti.artifact.spec.rarity
         const stones = arti.artifact.stonesList
         if (EB_ARTIFACT_IDS[arti.artifact.spec.name] === "Book of Basan") {
-            data_object.prop_boost += BOOK_EFFECT[name][rarity]
+            data_object.prop_boost += BOOK_EFFECT[arti.artifact.spec.level][rarity]
         }
 
         stones.forEach((stone) => {
             if (EB_ARTIFACT_IDS[stone.name] === "Soul Stone") {
-                data_object.soul_boost += SOUL_EFFECT[name][rarity]
+                data_object.soul_boost += SOUL_EFFECT[stone.level][stone.rarity]
             }
             if (EB_ARTIFACT_IDS[stone.name] === "Prophecy Stone") {
-                data_object.prop_boost += PROP_EFFECT[name][rarity]
+                data_object.prop_boost += PROP_EFFECT[stone.level][stone.rarity]
             }
         })
     })
@@ -174,7 +181,7 @@ function find_best_eb_set(gameSave : myClasses.GameSave, inventory : saveTypes.I
     };
     for (let i = 0; i < all_eb_sets.length; i++) {
         const set_boost = determine_set_boost(all_eb_sets[i])
-        if (set_boost.soul_boost > best_boost.boost.soul_boost && set_boost.prop_boost > best_boost.boost.prop_boost) {
+        if (set_boost.soul_boost >= best_boost.boost.soul_boost && set_boost.prop_boost >= best_boost.boost.prop_boost) {
             best_boost.boost = set_boost
             best_boost.index = i
         }

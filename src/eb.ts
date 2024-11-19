@@ -325,7 +325,7 @@ function solve_cubic_equation(a : number, b : number, c : number, d : number) : 
  * @param pe_bonus the amount of pe bonus researched
  * @param arti_effects the effects of artifacts and stones
  */
-function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
+function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : number, arti_effects: myTypes.CumulBoost) {
     return ((10 + se_bonus) * (1 + arti_effects["soul_boost"])) * ((1.05 + (0.01 * pe_bonus) + arti_effects["prop_boost"]) ** pe)
 }
 
@@ -338,11 +338,11 @@ function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : 
  * @param arti_effects the artifact effects
  * @returns the clothed eb
  */
-function calculate_clothed_eb(pe : number, pe_bonus : number, se : number, se_bonus : number, arti_effects : {prop_boost : number, soul_boost : number}) {
+function calculate_clothed_eb(pe : number, pe_bonus : number, se : number, se_bonus : number, arti_effects : myTypes.CumulBoost) {
     return se * calculate_Clothed_EB_per_SE(pe, se_bonus, pe_bonus, arti_effects)
 }
 
-function calculate_clothed_SE_for_target(target_EB : number, pe : number, pe_bonus : number, se_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
+function calculate_clothed_SE_for_target(target_EB : number, pe : number, pe_bonus : number, se_bonus : number, arti_effects: myTypes.CumulBoost) {
     return target_EB / calculate_Clothed_EB_per_SE(pe, se_bonus, pe_bonus, arti_effects)
 }
 
@@ -356,7 +356,7 @@ function calculate_clothed_SE_for_target(target_EB : number, pe : number, pe_bon
  * @param arti_effects the effect of artifacts
  * @returns list of objects containing pe and se amounts
  */
-function calculate_clothed_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number, arti_effects: { prop_boost : number, soul_boost : number}) {
+function calculate_clothed_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number, arti_effects: myTypes.CumulBoost) {
     // Initial Combos
     let combos = []
     let pe = 0

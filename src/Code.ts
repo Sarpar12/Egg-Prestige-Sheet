@@ -675,10 +675,13 @@ function update_JER_wrapper() {
 function test_artifact_sets() {
     // @ts-ignore
     let save : myClasses.GameSave = new GameSave(get_script_properties("EID"))
-    const eb_arti_stones = find_eb_arti_stones(save.get_arti_inv);
-    const best_arti_sets = find_best_artifacts(eb_arti_stones);
-    const arti_boost = calculate_arti_boosts(best_arti_sets)
-    Logger.log(eb_arti_stones)
-    Logger.log(best_arti_sets)
-    Logger.log(arti_boost)
+    const best_eb_set = find_best_eb_set(save, save.get_arti_inv);
+    const set_effect = determine_set_boost(best_eb_set)
+    Logger.log(best_eb_set);
+    const best_eb = calculate_clothed_eb(save.PE, save.prop_bonus, save.SE, save.soul_bonus, set_effect)
+    Logger.log(best_eb);
+
+    let sheet = get_sheet('Clothed EB')
+    sheet.getRange(1, 1).setValue(best_eb)
+    custom_number(true, 1, 1, "Clothed EB")
 }
