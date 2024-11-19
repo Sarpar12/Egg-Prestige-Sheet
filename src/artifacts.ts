@@ -171,11 +171,16 @@ function determine_set_boost(arti_set : saveTypes.InventoryItemsList[]) : myType
  */
 function find_best_eb_set(gameSave : myClasses.GameSave, inventory : saveTypes.InventoryItemsList[]) : saveTypes.InventoryItemsList[] {
     const all_eb_sets = find_all_eb_sets(gameSave.arti_sets, inventory);
-    let best_boost_index = -1
+    let best_boost : {index : number, boost : myTypes.CumulBoost} = {
+        index : -1,
+        boost : {soul_boost : 0, prop_boost : 0}
+    };
     for (let i = 0; i < all_eb_sets.length; i++) {
         const set_boost = determine_set_boost(all_eb_sets[i])
-        let total_boost =
+        if (set_boost.soul_boost > best_boost.boost.soul_boost && set_boost.prop_boost > best_boost.boost.prop_boost) {
+            best_boost.boost = set_boost
+            best_boost.index = i
+        }
     }
-
-    return best_eb_set
+    return all_eb_sets[best_boost.index];
 }
