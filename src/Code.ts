@@ -1,4 +1,6 @@
 // credit to @toffepeer
+import SheetDataArray = myTypes.SheetDataArray;
+
 /**
  * onOpen() is triggered whenever the sheet is opened.
  * Currently, it creates a menu shown below
@@ -512,8 +514,8 @@ function create_prev_header() {
  * Actually sets the values of the previous header
  * @param data the data param from sheet_fill - [eb, se, pe, prestiges, time, mer, jer]
  */
-function set_prev_header_values(data : any[]) {
-    let trimmed_data = [EB_to_role(data[0]), data[0], data[6], data[5], data[3]]
+function set_prev_header_values(data : myTypes.SheetDataArray) {
+    let trimmed_data = [EB_to_role(data.EB), data.EB, data.EB, data.MER, data.Prestiges]
     let sheet = get_sheet("Calculations")
     let p_sheet = get_sheet("Prestige Data")
     let prev_values : any[] = sheet.getRange("B6:B9").getValues()
@@ -525,7 +527,7 @@ function set_prev_header_values(data : any[]) {
         if (index === 0 && typeof value === 'string' && value != prev_values[0][index]) {
             return [value];
         }
-        return [value - prev_values[index]];
+        return [value as number - prev_values[index]];
     });
 
     // Setting the actual values
@@ -539,10 +541,10 @@ function set_prev_header_values(data : any[]) {
 /**
  * updates the current values shown in the sheet
  */
-function update_current_values(data : any[]) {
+function update_current_values(data : SheetDataArray) {
     let sheet = get_sheet("Calculations")
     let range = sheet.getRange("B6:B9")
-    let current_values = [[EB_to_role(data[0])], [data[0]], [data[6]], [data[5]]]
+    let current_values = [[EB_to_role(data.EB)], [data.EB], [data.JER], [data.MER]]
 
     range.setValues(current_values)
     custom_number(false, 7, 2, "Calculations") // Display EB with custom number
