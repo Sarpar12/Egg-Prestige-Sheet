@@ -237,7 +237,13 @@ function determine_stones_in_set(arti_set : saveTypes.InventoryItemsList[]) : my
         // Determine if a given artifact has eb stones
         arti.artifact.stonesList.forEach((stone) => {
             // either uses the level value, or 0, whichever is more truthy first
-            stone_data.soul_stones[stone.level] = (stone_data.soul_stones[stone.level] || 0) + 1;
+            if (EB_ARTIFACT_IDS[stone.name] === "Soul Stone") {
+                stone_data.soul_stones[stone.level] = (stone_data.soul_stones[stone.level] || 0) + 1;
+            }
+            if (EB_ARTIFACT_IDS[stone.name] === "Prophecy Stone") {
+                stone_data.prop_stones[stone.level] = (stone_data.prop_stones[stone.level] || 0) + 1;
+            }
+
         })
     })
     return stone_data
