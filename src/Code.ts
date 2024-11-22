@@ -836,13 +836,13 @@ function update_clothed_EB(boost_effect : myTypes.CumulBoost) {
     let combos = calculate_clothed_SE_EB_target_combos(target_EB, sepe[0][0], sepe[0][1], sepe_bonus[0], sepe_bonus[1], boost_effect)
 
     // Clear previous data
-    reset_sheet_column(3, 2, 3, 999, "Clothed EB")
+    reset_sheet_column(1, 2, 3, 999, "Clothed EB")
 
     // Fill data into sheet
     let data_length = combos.length
     for (let i = 0; i < data_length; i++) {
         let values = [combos[i].pe, combos[i].se]
-        sheet.getRange(`C${3+i}:D${3+i}`).setValues([values])
+        sheet.getRange(`A${3+i}:B${3+i}`).setValues([values])
     }
     custom_number_wrapper(true, 3, 2+data_length, 4, 4, "Clothed EB")
 }

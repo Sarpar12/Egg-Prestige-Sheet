@@ -361,7 +361,7 @@ function calculate_clothed_SE_EB_target_combos(target_eb : number, current_se : 
     let combos = []
     let pe = 0
     while (true) {
-        const se = calculate_clothed_SE_for_target(target_eb, pe, se_bonus, pe_bonus, arti_effects)
+        const se = calculate_clothed_SE_for_target(target_eb, pe, pe_bonus, se_bonus, arti_effects)
         combos.push({pe, se})
         if (se - current_se < 0) {
             break;
