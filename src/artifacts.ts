@@ -5,6 +5,7 @@
 //////////////////////
 // See https://github.com/elgranjero/EggIncProtos/tree/main/docs#artifactspecname
 // for which ids correspond with what
+
 const EB_ARTIFACT_IDS : Record<number, string> = {
     10 : "Book of Basan",
     34 : "Soul Stone",
@@ -202,13 +203,44 @@ function determine_set_boost_extra(boostData : myTypes.SheetBoostData) : myTypes
         prop_boost : 0,
     }
     data_object.prop_boost += BOOK_EFFECT[boostData.book.level][boostData.book.rarity]
-    boostData.prop_stones.forEach((stoneList) => {
-        data_object.prop_boost += (PROP_EFFECT[stoneList.level][0] * stoneList.amount)
+    Object.keys(boostData.prop_stones).forEach((string_key) => {
+        const level : number = parseInt(string_key)
+        const amount : number = boostData.prop_stones[level]
+        data_object.prop_boost += (PROP_EFFECT[level][0] * amount)
     })
-    boostData.soul_stones.forEach((stoneList) => {
-        data_object.soul_boost += (SOUL_EFFECT[stoneList.level][0] * stoneList.amount)
+    Object.keys(boostData.soul_stones).forEach((string_key) => {
+        const level : number = parseInt(string_key)
+        const amount : number = boostData.soul_stones[level]
+        data_object.soul_boost += (SOUL_EFFECT[level][0] * amount)
     })
     return data_object;
+}
+
+/**
+ * returns the stones in the set in {@link myTypes.SheetBoostData} format
+ *
+ * data here will be used to prefill the sheet
+ *
+ * @param arti_set the set to scan
+ */
+function determine_stones_in_set(arti_set : saveTypes.InventoryItemsList[]) : myTypes.SheetBoostData {
+    const stone_data : myTypes.SheetBoostData = {
+        book : {level : -1, rarity : 0},
+        soul_stones : {0 : 0, 1 : 0, 2 : 0},
+        prop_stones : {0 : 0, 1 : 0, 2 : 0},
+    }
+    arti_set.forEach((arti) => {
+        // Determine if bob, set value if bob
+        if (EB_ARTIFACT_IDS[arti.artifact.spec.name] === "Book of Basan") {
+            stone_data.book = {level : arti.artifact.spec.level, rarity : arti.artifact.spec.rarity}
+        }
+        // Determine if a given artifact has eb stones
+        arti.artifact.stonesList.forEach((stone) => {
+            // either uses the level value, or 0, whichever is more truthy first
+            stone_data.soul_stones[stone.level] = (stone_data.soul_stones[stone.level] || 0) + 1;
+        })
+    })
+    return stone_data
 }
 
 /**
@@ -238,12 +270,75 @@ function soul_stone_dropdown_information() : string[] {
  */
 function book_dropdown_information() : string[] {
     return [
-        "T1 Book of Basan - 0.25%",
-        "T2 Collectors Book of Basan - 0.5%",
-        "T3C Fortified Book of Basan - 0.75%",
-        "T3E Fortified Book of Basan - 0.8%",
-        "T4C Glided Book of Basan - 1%",
-        "T4E Glided Book of Basan - 1.1%",
-        "T4L Glided Book of Basan - 1.2%"
+        "None",
+        "T1C",
+        "T2C",
+        "T3C",
+        "T3E",
+        "T4C",
+        "T4E",
+        "T4L"
     ]
+}
+
+/**
+ * simply to prefill
+ * could be easier to algorithmically generate if it was simply T4l, etc
+ * @param sheetData
+ */
+function convert_book_info_into_string(sheetData : myTypes.SheetBoostData) : string {
+    const info_map : Map<string, string> = new Map<string, string>([
+        ["-10", "None"],
+        ["00", "T1"],
+        ["10", "T2C"],
+        ["20", "T3C"],
+        ["21", "T3E"],
+        ["30", "T4C"],
+        ["32", "T4E"],
+        ["33", "T4L"]
+    ])
+    return info_map.get(`${sheetData.book.level}${sheetData.book.rarity}`)
+}
+
+/**
+ * converts a string from the book library into a book object
+ * @param input the input string
+ */
+function convert_string_into_book(input : string) {
+    const object = {
+        level : 0,
+        rarity : 0
+    }
+    object.level = parseInt(input[1])
+    object.rarity = ((input: string): number => {
+        if (input[3] === "C") return 0;
+        if (input[3] === "E") return 2;
+        if (input[3] === "L") return 3;
+        return 0; // Default case for "U" (Uncommon) or any other value
+    })(input);
+    // Default value of 0 for returning an object
+    return object;
+}
+
+/**
+ * converts the more abstract object notation into a simplier object containing a list
+ * @param sheetData the object containing stone information
+ */
+function convert_stone_data_into_list(sheetData : myTypes.SheetBoostData) : myTypes.StoneList {
+    return {
+        prop_stones : [sheetData.prop_stones[0], sheetData.prop_stones[1], sheetData.prop_stones[2]],
+        soul_stones : [sheetData.soul_stones[0], sheetData.soul_stones[1], sheetData.soul_stones[2]]
+    }
+}
+
+/**
+ * converts a list of stones into a data object
+ * @param data_list
+ */
+function convert_stone_list_into_data(data_list : myTypes.StoneList) : {soul_stones: { [key: number] : number},
+    prop_stones: { [key: number] : number }} {
+    return {
+        soul_stones : {0 : data_list.soul_stones[0], 1 : data_list.soul_stones[1], 2 : data_list.soul_stones[2]},
+        prop_stones : {0 : data_list.prop_stones[0], 1 : data_list.prop_stones[2], 2 : data_list.prop_stones[2]}
+    }
 }

@@ -107,6 +107,16 @@ function create_data_validation_dropdown(cell : GoogleAppsScript.Spreadsheet.Ran
 }
 
 /**
+ * the previous function, but sets the same values for a list of cells.
+ * @param ranges the list of ranges to set the same dropdown for
+ * @param values the values for which the dropdown occur
+ */
+function create_data_validation_dropdown_rangeList(ranges : GoogleAppsScript.Spreadsheet.RangeList, values : any[]) {
+    const range_list = ranges.getRanges()
+    range_list.forEach(range => {create_data_validation_dropdown(range, values)})
+}
+
+/**
  * creates a data validation to make sure the input is a number
  * @param cell the cell to create a data validation in
  * @param value1 the lower value
