@@ -844,5 +844,5 @@ function update_clothed_EB(boost_effect : myTypes.CumulBoost) {
         let values = [combos[i].pe, combos[i].se]
         sheet.getRange(`A${3+i}:B${3+i}`).setValues([values])
     }
-    custom_number_wrapper(true, 3, 2+data_length, 4, 4, "Clothed EB")
+    custom_number_wrapper(true, 3, 2+data_length, 2, 2, "Clothed EB")
 }
