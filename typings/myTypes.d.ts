@@ -23,8 +23,8 @@ declare namespace myTypes {
      */
     export interface SheetBoostData {
         book: { level: number, rarity: number }
-        soul_stones: { [key: number] : number }
-        prop_stones: { [key: number] : number }
+        soul_stones: Record<number, number>
+        prop_stones: Record<number, number>
     }
 
     export interface StoneList {

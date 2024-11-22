@@ -321,7 +321,7 @@ function convert_string_into_book(input : string) {
 }
 
 /**
- * converts the more abstract object notation into a simplier object containing a list
+ * converts the more abstract object notation into a simpler object containing a list
  * @param sheetData the object containing stone information
  */
 function convert_stone_data_into_list(sheetData : myTypes.SheetBoostData) : myTypes.StoneList {

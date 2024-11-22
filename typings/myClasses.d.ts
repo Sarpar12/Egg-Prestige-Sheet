@@ -32,7 +32,7 @@ declare namespace myClasses {
     }
 
     // In testing, refactoring code to use this later
-    export interface SheetData {
+    export interface AppScriptUiInterface {
         get book_dropdown_values() : string[];
         get prop_dropdown_values() : string[];
         get soul_dropdown_values() : string[];

@@ -1,6 +1,4 @@
 // credit to @toffepeer
-import SheetDataArray = myTypes.SheetDataArray;
-
 /**
  * onOpen() is triggered whenever the sheet is opened.
  * Currently, it creates a menu shown below
@@ -239,9 +237,11 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
 function sheet_fill(data : myTypes.SheetDataArray) {
     // Setting Up Sheets
     const sheet = get_sheet("Prestige Data");
-    let p_sheet = get_sheet('Calculations')
+    const p_sheet = get_sheet('Calculations')
+    const c_sheet = get_sheet('Clothed EB')
     if (sheet.getLastRow() === 0) { set_sheet_header(); }
     if (p_sheet.getLastRow() === 0) { set_calc_header(); }
+    if (c_sheet.getLastRow() === 0) { set_clothed_header(); }
     // Actually using the data
     const dataList = convertSheetDataArray(data)
     dataList.push("")
@@ -541,7 +541,7 @@ function set_prev_header_values(data : myTypes.SheetDataArray) {
 /**
  * updates the current values shown in the sheet
  */
-function update_current_values(data : SheetDataArray) {
+function update_current_values(data :myTypes.SheetDataArray) {
     let sheet = get_sheet("Calculations")
     let range = sheet.getRange("B6:B9")
     let current_values = [[EB_to_role(data.EB)], [data.EB], [data.JER], [data.MER]]
@@ -665,23 +665,129 @@ function update_JER_wrapper() {
     custom_number_wrapper(true, 3, 2+data_length, 6, 6, "Calculations")
 }
 
+///////////// Code here is for clothed things
+function create_clothed_role_dropdown(eb : number, cell : GoogleAppsScript.Spreadsheet.Range) {
+    let role_list : string[] = ALL_ROLES.slice(ALL_ROLES.indexOf(EB_to_role(eb)) + 1, -1) // Remove infinifarmer from the list
+    create_data_validation_dropdown(cell, role_list)
+}
 
-////////////////////////////
-///////
-////// Code here is used for testing
-//////
-////////////////////////////
+/**
+ * sets the header values for clothed eb, sets up drop-downs and everything
+ */
+function set_clothed_header() {
+    const sheet = get_sheet("Clothed EB")
+    // EB% and Targeting Setup
+    sheet.getRange("A1:B1").merge().setValue("EB%")
+        .setBackground('#1565C0')
+        .setHorizontalAlignment('center')
+        .setFontWeight('bold')
+        .setFontStyle('italic')
+    sheet.getRange("A2:B2").setValues([["PE Required"],["SE Required"]])
+        .setHorizontalAlignment('center')
+        .setBackground('#E3F2FD')
+        .setFontWeight('bold')
+    sheet.getRange("C1:C2").setValues([["Select Role"], ["Selected Bob"]])
+        .setBackground('#F1EE8E')
+        .setFontWeight('bold')
+        .setFontColor('black')
+    sheet.getRange("F1:G1").merge().setValue("Current Clothed EB")
+        .setBackground('#1565C0')
+        .setFontWeight('bold')
+        .setFontStyle('italic')
+        .setHorizontalAlignment('center')
+    // Role dropdown unfortunately requires a game save, won't be in this function
+    create_data_validation_dropdown(sheet.getRange("D2"), book_dropdown_information())
 
-function test_artifact_sets() {
+    // Stones Selection Setup:
+    // Setting up menu
+    const prop_stones : string[] = prop_stone_dropdown_information()
+    const soul_stones : string[] = soul_stone_dropdown_information()
+    sheet.getRange("C3:F3").setValues([["Selected Prop Stones"], [prop_stones[1]], [prop_stones[2]], [prop_stones[3]]])
+    sheet.getRange("C5:F5").setValues([["Selected Soul Stones"], [soul_stones[1]], [soul_stones[2]], [soul_stones[3]]])
+    const dropdown_ranges = sheet.getRangeList(['D4','E4', 'F4', 'D6', 'E6', 'F6']).activate()
+    create_data_validation_dropdown_rangeList(dropdown_ranges, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+}
+
+/**
+ * update clothed eb - roles, targeting etc
+ *
+ * This function ignores previously set stones, resets it back to maxed clothed set
+ */
+function update_clothed_eb_normal() {
+    // Setting up stuff
     // @ts-ignore
-    let save : myClasses.GameSave = new GameSave(get_script_properties("EID"))
-    const best_eb_set = find_best_eb_set(save, save.get_arti_inv);
+    const save = new GameSave(get_script_properties("EID")) as myClasses.GameSave
+    const sheet  = get_sheet('Clothed EB')
+    const best_eb_set = find_best_eb_set(save, save.get_arti_inv)
     const set_effect = determine_set_boost(best_eb_set)
-    Logger.log(best_eb_set);
-    const best_eb = calculate_clothed_eb(save.PE, save.prop_bonus, save.SE, save.soul_bonus, set_effect)
-    Logger.log(best_eb);
+    const clothed_eb = calculate_clothed_eb(save.PE, save.prop_bonus, save.SE, save.soul_bonus, set_effect)
+    const stones = determine_stones_in_set(best_eb_set)
 
+    // Actually filling the sheet data
+    // Prefill clothed set values
+    create_clothed_role_dropdown(clothed_eb, sheet.getRange("D1"));
+    sheet.getRange("D2").setValue(convert_book_info_into_string(stones))
+    const stone_list = convert_stone_data_into_list(stones)
+    sheet.getRange("D4:F4").setValues([stone_list.prop_stones])
+    sheet.getRange("D6:F6").setValues([stone_list.soul_stones])
+
+    update_clothed_EB(set_effect)
+}
+
+/**
+ * this function doesn't ignore previously set stones and bob
+ * will read in values from the sheet instead.
+ */
+function update_clothed_eb_limited() {
+    // @ts-ignore
+    const save = new GameSave(get_script_properties("EID")) as myClasses.GameSave
+    const sheet  = get_sheet('Clothed EB')
+
+    // Read in values from the sheet
+    const bob_object = convert_string_into_book(sheet.getRange("D2").getValue());
+    const prop_stones : number[] = [];
+    const soul_stones: number[] = [];
+    sheet.getRange("D4:F4").getValues().forEach((value) => {
+        prop_stones.push(parseInt(value[0]))
+    })
+    sheet.getRange("D6:F6").getValues().forEach((value) => {
+        soul_stones.push(parseInt(value[0]))
+    })
+
+    // Convert read in data into actual boost data
+    const stones_object = convert_stone_list_into_data({ prop_stones: prop_stones, soul_stones: soul_stones })
+    const final_set : myTypes.SheetBoostData = {
+        book: bob_object,
+        soul_stones : stones_object.soul_stones,
+        prop_stones : stones_object.prop_stones
+    }
+    const boost_effect = determine_set_boost_extra(final_set)
+
+    update_clothed_EB(boost_effect)
+}
+
+function update_clothed_EB(boost_effect : myTypes.CumulBoost) {
+    // Initial Data Getting
     let sheet = get_sheet('Clothed EB')
-    sheet.getRange(1, 1).setValue(best_eb)
-    custom_number(true, 1, 1, "Clothed EB")
+    let prestige_sheet = get_sheet('Prestige Data')
+
+    // Data Setup
+    if (sheet.getRange("D1").getValue() === "") {
+        return
+    }
+    let sepe = prestige_sheet.getRange(prestige_sheet.getLastRow(), 2, 1, 2).getValues()
+    let sepe_bonus = [parseInt(get_script_properties('SE_ER')), parseInt(get_script_properties('PE_ER'))]
+    let target_EB : number = role_to_EB(sheet.getRange("D1").getValue())
+    let combos = calculate_clothed_SE_EB_target_combos(target_EB, sepe[0][0], sepe[0][1], sepe_bonus[0], sepe_bonus[1], boost_effect)
+
+    // Clear previous data
+    reset_sheet_column(3, 2, 3, 999, "Clothed EB")
+
+    // Fill data into sheet
+    let data_length = combos.length
+    for (let i = 0; i < data_length; i++) {
+        let values = [combos[i].pe, combos[i].se]
+        sheet.getRange(`C${3+i}:D${3+i}`).setValues([values])
+    }
+    custom_number_wrapper(true, 3, 2+data_length, 4, 4, "Clothed EB")
 }
