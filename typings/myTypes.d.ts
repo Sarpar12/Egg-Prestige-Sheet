@@ -14,9 +14,21 @@ declare namespace myTypes {
         prop_boost : number
     }
 
+    /**
+     * Note that this interface is supposed to have levels 0, 1, 2
+     * anything else WILL break the code
+     *
+     * Changed to allow for easier indexing with stone.level
+     * instead of using if (stone.level === 1), etc
+     */
     export interface SheetBoostData {
-        book : {level : number, rarity : number} // <level, rarity>
-        soul_stones : {level : number, amount : number}[] // [<amount, level>]
-        prop_stones : {level : number, amount : number}[] // [<amount, level>]
+        book: { level: number, rarity: number }
+        soul_stones: { [key: number] : number }
+        prop_stones: { [key: number] : number }
+    }
+
+    export interface StoneList {
+        prop_stones : number[]
+        soul_stones : number[]
     }
 }

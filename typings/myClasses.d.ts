@@ -1,5 +1,6 @@
 declare namespace myClasses {
     import SheetDataArray = myTypes.SheetDataArray;
+    import SheetBoostData = myTypes.SheetBoostData;
 
     export interface GameSave {
         readonly save: saveTypes.Root;
@@ -28,5 +29,14 @@ declare namespace myClasses {
         get MER(): number;
         get JER(): number;
         get sheetData() : SheetDataArray;
+    }
+
+    // In testing, refactoring code to use this later
+    export interface SheetData {
+        get book_dropdown_values() : string[];
+        get prop_dropdown_values() : string[];
+        get soul_dropdown_values() : string[];
+        convert_book_into_string(book : SheetBoostData["book"]) : string;
+        convert_string_into_book(input : string) : SheetBoostData["book"];
     }
 }
