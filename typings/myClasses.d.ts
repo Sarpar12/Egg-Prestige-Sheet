@@ -33,9 +33,28 @@ declare namespace myClasses {
 
     // In testing, refactoring code to use this later
     export interface AppScriptUiInterface {
-        get book_dropdown_values() : string[];
-        get prop_dropdown_values() : string[];
-        get soul_dropdown_values() : string[];
+        save : myClasses.GameSave;
+        t3_prop_count : number;
+        t2_prop_count : number;
+        t1_prop_count : number;
+        t3_soul_count : number;
+        t2_soul_count : number;
+        t1_soul_count : number;
+        book_level : number;
+        book_rarity : number;
+        readonly stones_dropdown : string[];
+        readonly book_dropdown_map : Map<string, string>;
+
+        /**
+         * this function is only used to instantiate
+         * prop and soul counts given a gamesave
+         */
+        setup_class_variables() : void;
+
+        get stone_dropdown_values() : string[];
+        get boost_data() : myTypes.SheetBoostData;
+        get stone_list() : myTypes.StoneList
+        get book() : SheetBoostData["book"];
         convert_book_into_string(book : SheetBoostData["book"]) : string;
         convert_string_into_book(input : string) : SheetBoostData["book"];
     }
