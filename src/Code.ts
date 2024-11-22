@@ -85,8 +85,8 @@ function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
         update_JER_wrapper()
     }
     const clothed_eb_array = ["D1", "D2", "D4", "E4", "F4", "D6", "E6", "F6"]
-    if (range.getSheet().getName() === "Clothed EB" && range.getA1Notation() in clothed_eb_array) {
-        if (range.getValue() == "") {
+    if (range.getSheet().getName() === "Clothed EB" && clothed_eb_array.includes(range.getA1Notation())) {
+        if (range.getValue() === "") {
             return
         }
         update_clothed_eb_limited()
