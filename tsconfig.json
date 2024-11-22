@@ -4,6 +4,14 @@
         "alwaysStrict": true,
         "noImplicitAny": true,
         "noUnusedParameters": true,
-        "noUnusedLocals": true
-    }
+        "noUnusedLocals": true,
+        "typeRoots": [
+            "./typings",
+            "./node_modules/@types"
+        ]
+    },
+    "include": [
+        "src/**/*",   // Adjust this to where your source files actually are
+        "typings/**/*" // Ensure the types folder or files are included
+    ]
 }

@@ -1,6 +1,8 @@
 **/**
-!Code.ts
-!Extras.ts
-!GameSave.ts
+!src/Code.ts
+!src/Extras.ts
+!src/GameSave.ts
+!src/eb.ts
+!src/artifacts.ts
+!src/AppScriptUiInterface.ts
 !appsscript.json
-!eb.ts

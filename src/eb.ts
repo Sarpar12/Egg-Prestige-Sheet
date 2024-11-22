@@ -1,6 +1,5 @@
 /// All credit for this code goes to @tiller.s on discord
 /// Their code was the basis for this
-
 const ALL_ROLES : string[] = [
     "Farmer I",
     "Farmer I",
@@ -49,7 +48,7 @@ const ALL_ROLES : string[] = [
 
 /**
  * converts an earnings bonus into a farmer role
- * @param EB the earnings bonus, as an number
+ * @param EB the earnings bonus, as a number
  * @returns string, the farmer role
  */
 function EB_to_role(EB: number) : string {
@@ -63,7 +62,7 @@ function EB_to_role(EB: number) : string {
 }
 
 /**
- * converts a given role into a eb role
+ * converts a given role into an eb role
  * @param role the role selected
  */
 function role_to_EB(role: string) : number{
@@ -73,12 +72,12 @@ function role_to_EB(role: string) : number{
 }
 
 /**
- * returns the se and pe bonus as an list
- * @param gameSave the save file of the user
+ * returns the se and pe bonus as a list
  * @returns a number list of [soul bounus, prop bonus]
  */
 function get_se_pe_bonus() : number[] {
-    let gameSave : GameSave = new GameSave(get_script_properties('EID'))
+    // @ts-ignore
+    let gameSave : myClasses.GameSave = new GameSave(get_script_properties('EID'))
     return [gameSave.soul_bonus, gameSave.prop_bonus]
 }
 
@@ -173,21 +172,18 @@ function calculate_SE_EB_target_combos(target_eb : number, current_se : number, 
     }
 
     // Getting the actual player values
-    let player_combo = combos
-        .map(({pe, se}) => 
+    return combos
+        .map(({pe, se}) =>
             ({
                 pe: pe - current_pe,
                 se: Math.max(se - current_se, 0)
             })
         )
-        .filter(({pe}) => pe >= 0);
-
-    return player_combo
+        .filter(({pe}) => pe >= 0)
 }
 
 // Anything after this is for solving JER
 // It's more complicated
-
 function calc_JER(pe : number, se : number) : number {
     const logSE = Math.log10(se);
     return (((0.1519 * Math.pow(logSE, 3) - 4.8517 * Math.pow(logSE, 2) + 48.248 * logSE - 143.46) / pe)*100*pe+100*49) / (pe + 100);
@@ -227,8 +223,7 @@ function calculate_se_for_target_jER(jer : number, pe : number) {
     if (logSE >= ALL_ROLES.length)
         return null;
 
-    const se = Math.pow(10, logSE);
-    return se;
+    return Math.pow(10, logSE);
 }
 
 /**
@@ -317,4 +312,70 @@ function solve_cubic_equation(a : number, b : number, c : number, d : number) : 
     }
     
     return roots.sort();
+}
+
+////////////////////
+// Clothed EB targetting below
+////////////////////
+
+/**
+ * calculates the EB gained per se
+ * @param pe the amount of pe
+ * @param se_bonus the levels of se bonus researched
+ * @param pe_bonus the amount of pe bonus researched
+ * @param arti_effects the effects of artifacts and stones
+ */
+function calculate_Clothed_EB_per_SE(pe : number, se_bonus : number, pe_bonus : number, arti_effects: myTypes.CumulBoost) {
+    return ((10 + se_bonus) * (1 + arti_effects.soul_boost)) * ((1.05 + (0.01 * pe_bonus) + arti_effects.prop_boost) ** pe)
+}
+
+/**
+ * finds the clothed eb
+ * @param pe the amount of pe
+ * @param pe_bonus the bonus pe research 
+ * @param se the amount of se
+ * @param se_bonus  the se epic research
+ * @param arti_effects the artifact effects
+ * @returns the clothed eb
+ */
+function calculate_clothed_eb(pe : number, pe_bonus : number, se : number, se_bonus : number, arti_effects : myTypes.CumulBoost) {
+    return se * calculate_Clothed_EB_per_SE(pe, se_bonus, pe_bonus, arti_effects)
+}
+
+function calculate_clothed_SE_for_target(target_EB : number, pe : number, pe_bonus : number, se_bonus : number, arti_effects: myTypes.CumulBoost) {
+    return target_EB / calculate_Clothed_EB_per_SE(pe, se_bonus, pe_bonus, arti_effects)
+}
+
+/**
+ * finds combinations of se and pe that would reach a specified combination
+ * @param target_eb the eb to be reached
+ * @param current_se the current amount of se
+ * @param current_pe the current amount of pe
+ * @param se_bonus se bonus researched
+ * @param pe_bonus pe bonus researched
+ * @param arti_effects the effect of artifacts
+ * @returns list of objects containing pe and se amounts
+ */
+function calculate_clothed_SE_EB_target_combos(target_eb : number, current_se : number, current_pe : number, se_bonus : number, pe_bonus : number, arti_effects: myTypes.CumulBoost) {
+    // Initial Combos
+    let combos = []
+    let pe = 0
+    while (true) {
+        const se = calculate_clothed_SE_for_target(target_eb, pe, pe_bonus, se_bonus, arti_effects)
+        combos.push({pe, se})
+        if (se - current_se < 0) {
+            break;
+        }
+        pe += 1
+    }
+
+    // Getting the actual player values
+    return combos
+        .map(({pe, se}) =>
+            ({
+                pe: pe - current_pe,
+                se: Math.max(se - current_se, 0)
+            })
+        )
+        .filter(({pe}) => pe >= 0);
 }
