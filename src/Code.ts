@@ -778,6 +778,8 @@ function update_clothed_eb_normal() {
     const stone_list = convert_stone_data_into_list(stones)
     sheet.getRange("D4:F4").setValues([stone_list.prop_stones])
     sheet.getRange("D6:F6").setValues([stone_list.soul_stones])
+    sheet.getRange("F2:G2").merge().setValue(clothed_eb)
+    custom_number(false, 2, 6, "Clothed EB")
 
     update_clothed_EB(set_effect)
 }
@@ -787,8 +789,6 @@ function update_clothed_eb_normal() {
  * will read in values from the sheet instead.
  */
 function update_clothed_eb_limited() {
-    // @ts-ignore
-    const save = new GameSave(get_script_properties("EID")) as myClasses.GameSave
     const sheet  = get_sheet('Clothed EB')
 
     // Read in values from the sheet
@@ -810,6 +810,13 @@ function update_clothed_eb_limited() {
         prop_stones : stones_object.prop_stones
     }
     const boost_effect = determine_set_boost_extra(final_set)
+
+    const data_sheet = get_sheet('Prestige Data')
+    let sepe = data_sheet.getRange(data_sheet.getLastRow(), 2, 1, 2).getValues().map((value) => {return parseInt(value[0])})
+    let sepe_bonus = [parseInt(get_script_properties('SE_ER')), parseInt(get_script_properties('PE_ER'))]
+    let clothed_eb = calculate_clothed_eb(sepe[1], sepe_bonus[1], sepe[0], sepe_bonus[0], boost_effect)
+    sheet.getRange("F2:G2").merge().setValue(clothed_eb)
+    custom_number(false, 2, 6, "Clothed EB")
 
     update_clothed_EB(boost_effect)
 }
