@@ -9,6 +9,9 @@
  *    - Enable Automatic Updates
  *    - Disable Automatic Updates
  *    - Automatic Update Information
+ *  - Clothed EB
+ *    - Toggle Clothed Override
+ *    - Override Status
  *  - Duplicate Entries
  *    - Toggle Duplicate Entries
  *    - Get Duplicate Status
@@ -81,11 +84,12 @@ function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
         }
         update_JER_wrapper()
     }
-    if (range.getSheet().getName() === "Clothed EB" && range.getA1Notation() === "D1") {
+    const clothed_eb_array = ["D1", "D2", "D4", "E4", "F4", "D6", "E6", "F6"]
+    if (range.getSheet().getName() === "Clothed EB" && range.getA1Notation() in clothed_eb_array) {
         if (range.getValue() == "") {
             return
         }
-        update_clothed_eb_normal()
+        update_clothed_eb_limited()
     }
 }
 
@@ -711,7 +715,7 @@ function create_clothed_role_dropdown(eb : number, cell : GoogleAppsScript.Sprea
 function set_clothed_header() {
     const sheet = get_sheet("Clothed EB")
     // EB% and Targeting Setup
-    sheet.getRange("A1:B1").merge().setValue("EB%")
+    sheet.getRange("A1:B1").merge().setValue("Clothed EB%")
         .setBackground('#1565C0')
         .setHorizontalAlignment('center')
         .setFontWeight('bold')
@@ -729,6 +733,7 @@ function set_clothed_header() {
         .setFontWeight('bold')
         .setFontStyle('italic')
         .setHorizontalAlignment('center')
+    sheet.getRangeList(["C3", "C5"]).activate().setBackground('#F1EE8E').setFontWeight('bold')
     // Role dropdown unfortunately requires a game save, won't be in this function
     create_data_validation_dropdown(sheet.getRange("D2"), book_dropdown_information())
 
@@ -739,7 +744,7 @@ function set_clothed_header() {
     sheet.getRange("C3:F3").setValues([["Selected Prop Stones", prop_stones[0], prop_stones[1], prop_stones[2]]])
     sheet.getRange("C5:F5").setValues([["Selected Soul Stones",soul_stones[0],soul_stones[1], soul_stones[0]]])
     const dropdown_ranges = sheet.getRangeList(['D4','E4', 'F4', 'D6', 'E6', 'F6']).activate()
-    create_data_validation_dropdown_rangeList(dropdown_ranges, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    create_data_validation_dropdown_rangeList(dropdown_ranges, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 }
 
 /**
@@ -795,11 +800,11 @@ function update_clothed_eb_limited() {
     const bob_object = convert_string_into_book(sheet.getRange("D2").getValue());
     const prop_stones : number[] = [];
     const soul_stones: number[] = [];
-    sheet.getRange("D4:F4").getValues().forEach((value) => {
-        prop_stones.push(parseInt(value[0]))
+    sheet.getRange("D4:F4").getValues()[0].forEach((value: number) => {
+        prop_stones.push(value);
     })
-    sheet.getRange("D6:F6").getValues().forEach((value) => {
-        soul_stones.push(parseInt(value[0]))
+    sheet.getRange("D6:F6").getValues()[0].forEach((value : number) => {
+        soul_stones.push(value)
     })
 
     // Convert read in data into actual boost data
@@ -812,7 +817,9 @@ function update_clothed_eb_limited() {
     const boost_effect = determine_set_boost_extra(final_set)
 
     const data_sheet = get_sheet('Prestige Data')
-    let sepe = data_sheet.getRange(data_sheet.getLastRow(), 2, 1, 2).getValues().map((value) => {return parseInt(value[0])})
+    let sepe = data_sheet.getRange(data_sheet.getLastRow(), 2, 1, 2).getValues()[0].map((value) => {
+        return parseFloat(value)
+    })
     let sepe_bonus = [parseInt(get_script_properties('SE_ER')), parseInt(get_script_properties('PE_ER'))]
     let clothed_eb = calculate_clothed_eb(sepe[1], sepe_bonus[1], sepe[0], sepe_bonus[0], boost_effect)
     sheet.getRange("F2:G2").merge().setValue(clothed_eb)

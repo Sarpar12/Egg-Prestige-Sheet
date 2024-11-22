@@ -315,7 +315,7 @@ function convert_string_into_book(input : string) {
         level : 0,
         rarity : 0
     }
-    object.level = parseInt(input[1])
+    object.level = parseInt(input[1]) - 1
     object.rarity = ((input: string): number => {
         if (input[3] === "C") return 0;
         if (input[3] === "E") return 2;
@@ -345,6 +345,6 @@ function convert_stone_list_into_data(data_list : myTypes.StoneList) : {soul_sto
     prop_stones: { [key: number] : number }} {
     return {
         soul_stones : {0 : data_list.soul_stones[0], 1 : data_list.soul_stones[1], 2 : data_list.soul_stones[2]},
-        prop_stones : {0 : data_list.prop_stones[0], 1 : data_list.prop_stones[2], 2 : data_list.prop_stones[2]}
+        prop_stones : {0 : data_list.prop_stones[0], 1 : data_list.prop_stones[1], 2 : data_list.prop_stones[2]}
     }
 }
