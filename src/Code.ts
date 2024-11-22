@@ -228,7 +228,7 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
 
     let data = save.sheetData
     if (dupe_enabled) {
-        sheet_fill(data)
+        sheet_fill(data, save)
         set_update_time()
     } else {
         if (check_dupe(save)) {
@@ -237,7 +237,7 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
             }
             return null
         } else {
-            sheet_fill(data)
+            sheet_fill(data, save)
             set_update_time()
         }
     }
@@ -247,8 +247,9 @@ function fill_cells(dupe_enabled: boolean, automatic: boolean) : void {
  * Actually fills in the sheets
  *
  * @param data : [eb, se, pe, prestiges, time, mer, jer]
+ * @param save the gamesave
  */
-function sheet_fill(data : myTypes.SheetDataArray) {
+function sheet_fill(data : myTypes.SheetDataArray, save : myClasses.GameSave) : void {
     // Setting Up Sheets
     const sheet = get_sheet("Prestige Data");
     const p_sheet = get_sheet('Calculations')
@@ -273,7 +274,7 @@ function sheet_fill(data : myTypes.SheetDataArray) {
     set_prev_header_values(data)
     update_current_values(data)
     create_role_dropdown([EB_to_role(dataList[0] as number)])
-    update_clothed_eb_wrapper()
+    update_clothed_eb_wrapper(save)
 }
 
 /**
@@ -750,12 +751,12 @@ function set_clothed_header() {
 /**
  * determines which functions to call
  */
-function update_clothed_eb_wrapper() {
+function update_clothed_eb_wrapper(save : myClasses.GameSave) {
     if (!(get_script_properties('OVERRIDE_ENABLED'))) {
         set_script_property('OVERRIDE_ENABLED', 'true')
     }
     if (get_script_properties(`OVERRIDE_ENABLED`) === "true") {
-        update_clothed_eb_normal()
+        update_clothed_eb_normal(save)
     } else {
         update_clothed_eb_limited()
     }
@@ -766,10 +767,9 @@ function update_clothed_eb_wrapper() {
  *
  * This function ignores previously set stones, resets it back to maxed clothed set
  */
-function update_clothed_eb_normal() {
+function update_clothed_eb_normal(save : myClasses.GameSave) {
     // Setting up stuff
     // @ts-ignore
-    const save = new GameSave(get_script_properties("EID")) as myClasses.GameSave
     const sheet  = get_sheet('Clothed EB')
     const best_eb_set = find_best_eb_set(save, save.get_arti_inv)
     const set_effect = determine_set_boost(best_eb_set)
@@ -794,7 +794,7 @@ function update_clothed_eb_normal() {
  * will read in values from the sheet instead.
  */
 function update_clothed_eb_limited() {
-    const sheet  = get_sheet('Clothed EB')
+    const sheet = get_sheet('Clothed EB')
 
     // Read in values from the sheet
     const bob_object = convert_string_into_book(sheet.getRange("D2").getValue());
