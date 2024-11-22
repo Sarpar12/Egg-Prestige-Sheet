@@ -317,9 +317,9 @@ function convert_string_into_book(input : string) {
     }
     object.level = parseInt(input[1]) - 1
     object.rarity = ((input: string): number => {
-        if (input[3] === "C") return 0;
-        if (input[3] === "E") return 2;
-        if (input[3] === "L") return 3;
+        if (input[2] === "C") return 0;
+        if (input[2] === "E") return 2;
+        if (input[2] === "L") return 3;
         return 0; // Default case for "U" (Uncommon) or any other value
     })(input);
     // Default value of 0 for returning an object
