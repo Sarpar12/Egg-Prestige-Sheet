@@ -34,6 +34,10 @@ function onOpen() {
             .addItem('Toggle Duplicate Entries', 'toggle_duplicates')
             .addItem(`Get Duplicate Status`, 'dupe_status'))
         .addSeparator()
+        .addSubMenu(SpreadsheetApp.getUi().createMenu('Clothed EB'))
+            .addItem('Keep Clothed Set(No Override', 'toggle_clothed_override')
+            .addItem('Display Override Status', 'display_override')
+        .addSeparator()
         .addSubMenu(SpreadsheetApp.getUi().createMenu('EID stuff')
             .addItem('Set EID', 'setEID')
             .addItem('Show EID currently saved', 'showEID'))
@@ -265,6 +269,7 @@ function sheet_fill(data : myTypes.SheetDataArray) {
     set_prev_header_values(data)
     update_current_values(data)
     create_role_dropdown([EB_to_role(dataList[0] as number)])
+    update_clothed_eb_wrapper()
 }
 
 /**
@@ -354,6 +359,29 @@ function toggle_duplicates() {
         set_script_property("DUPE_ENABLED", "true")
     }
     dupe_status()
+}
+
+/**
+ * enable or disable overriding clothed set
+ */
+function toggle_clothed_override() {
+    if ((get_script_properties("OVERRIDE_ENABLED") === "true")) {
+        set_script_property("OVERRIDE_ENABLED", "false")
+    } else {
+        set_script_property("OVERRIDE_ENABLED", "true")
+    }
+    display_override()
+}
+
+function display_override() {
+    if (!(get_script_properties("OVERRIDE_ENABLED"))) {
+        set_script_property("DUPE_ENABLED", "false")
+    }
+    if ((get_script_properties("OVERRIDE_ENABLED")) === "true") {
+        alert(`Overriding set is enabled`);
+    } else {
+        alert(`Overriding set is disabled`);
+    }
 }
 
 /**
@@ -712,6 +740,20 @@ function set_clothed_header() {
     sheet.getRange("C5:F5").setValues([["Selected Soul Stones",soul_stones[0],soul_stones[1], soul_stones[0]]])
     const dropdown_ranges = sheet.getRangeList(['D4','E4', 'F4', 'D6', 'E6', 'F6']).activate()
     create_data_validation_dropdown_rangeList(dropdown_ranges, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+}
+
+/**
+ * determines which functions to call
+ */
+function update_clothed_eb_wrapper() {
+    if (!(get_script_properties('OVERRIDE_ENABLED'))) {
+        set_script_property('OVERRIDE_ENABLED', 'true')
+    }
+    if (get_script_properties(`OVERRIDE_ENABLED`) === "true") {
+        update_clothed_eb_normal()
+    } else {
+        update_clothed_eb_limited()
+    }
 }
 
 /**
