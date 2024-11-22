@@ -77,6 +77,12 @@ function onEdit(e : GoogleAppsScript.Events.SheetsOnEdit) {
         }
         update_JER_wrapper()
     }
+    if (range.getSheet().getName() === "Clothed EB" && range.getA1Notation() === "D1") {
+        if (range.getValue() == "") {
+            return
+        }
+        update_clothed_eb_normal()
+    }
 }
 
 /**
@@ -682,7 +688,7 @@ function set_clothed_header() {
         .setHorizontalAlignment('center')
         .setFontWeight('bold')
         .setFontStyle('italic')
-    sheet.getRange("A2:B2").setValues([["PE Required"],["SE Required"]])
+    sheet.getRange("A2:B2").setValues([["PE Required", "SE Required"]])
         .setHorizontalAlignment('center')
         .setBackground('#E3F2FD')
         .setFontWeight('bold')
@@ -702,8 +708,8 @@ function set_clothed_header() {
     // Setting up menu
     const prop_stones : string[] = prop_stone_dropdown_information()
     const soul_stones : string[] = soul_stone_dropdown_information()
-    sheet.getRange("C3:F3").setValues([["Selected Prop Stones"], [prop_stones[1]], [prop_stones[2]], [prop_stones[3]]])
-    sheet.getRange("C5:F5").setValues([["Selected Soul Stones"], [soul_stones[1]], [soul_stones[2]], [soul_stones[3]]])
+    sheet.getRange("C3:F3").setValues([["Selected Prop Stones", prop_stones[0], prop_stones[1], prop_stones[2]]])
+    sheet.getRange("C5:F5").setValues([["Selected Soul Stones",soul_stones[0],soul_stones[1], soul_stones[0]]])
     const dropdown_ranges = sheet.getRangeList(['D4','E4', 'F4', 'D6', 'E6', 'F6']).activate()
     create_data_validation_dropdown_rangeList(dropdown_ranges, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 }

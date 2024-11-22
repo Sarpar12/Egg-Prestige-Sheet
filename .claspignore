@@ -4,4 +4,5 @@
 !src/GameSave.ts
 !src/eb.ts
 !src/artifacts.ts
+!src/AppScriptUiInterface.ts
 !appsscript.json

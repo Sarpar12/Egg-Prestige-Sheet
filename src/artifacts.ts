@@ -248,9 +248,9 @@ function determine_stones_in_set(arti_set : saveTypes.InventoryItemsList[]) : my
  */
 function prop_stone_dropdown_information() : string[] {
     return [
-        "Prophecy Stone - 0.05%",
-        "Eggsquisite Prophecy Stone - 0.1%",
-        "Radiant Prophecy Stone - 1%"
+        "Regular",
+        "Eggsquisite",
+        "Radiant"
     ]
 }
 
@@ -259,9 +259,9 @@ function prop_stone_dropdown_information() : string[] {
  */
 function soul_stone_dropdown_information() : string[] {
     return [
-        "Soul Stone - 5%",
-        "Eggsquisite Soul Stone - 10%",
-        "Radiant Soul Stone - 25%"
+        "Regular",
+        "Eggsquisite",
+        "Radiant Soul"
     ]
 }
 
