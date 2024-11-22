@@ -715,6 +715,8 @@ function create_clothed_role_dropdown(eb : number, cell : GoogleAppsScript.Sprea
  */
 function set_clothed_header() {
     const sheet = get_sheet("Clothed EB")
+    // @ts-ignore
+    const data_ui : myClasses.AppScriptUiInterface = new AppScriptUiInterface()
     // EB% and Targeting Setup
     sheet.getRange("A1:B1").merge().setValue("Clothed EB%")
         .setBackground('#1565C0')
@@ -736,14 +738,13 @@ function set_clothed_header() {
         .setHorizontalAlignment('center')
     sheet.getRangeList(["C3", "C5"]).activate().setBackground('#F1EE8E').setFontWeight('bold')
     // Role dropdown unfortunately requires a game save, won't be in this function
-    create_data_validation_dropdown(sheet.getRange("D2"), book_dropdown_information())
+    create_data_validation_dropdown(sheet.getRange("D2"), data_ui.book_dropdown)
 
     // Stones Selection Setup:
     // Setting up menu
-    const prop_stones : string[] = prop_stone_dropdown_information()
-    const soul_stones : string[] = soul_stone_dropdown_information()
-    sheet.getRange("C3:F3").setValues([["Selected Prop Stones", prop_stones[0], prop_stones[1], prop_stones[2]]])
-    sheet.getRange("C5:F5").setValues([["Selected Soul Stones",soul_stones[0],soul_stones[1], soul_stones[0]]])
+    const stones_dropdown : string[] = data_ui.stones_dropdown
+    sheet.getRange("C3:F3").setValues([["Selected Prop Stones", stones_dropdown[0], stones_dropdown[1], stones_dropdown[2]]])
+    sheet.getRange("C5:F5").setValues([["Selected Soul Stones", stones_dropdown[0], stones_dropdown[1], stones_dropdown[0]]])
     const dropdown_ranges = sheet.getRangeList(['D4','E4', 'F4', 'D6', 'E6', 'F6']).activate()
     create_data_validation_dropdown_rangeList(dropdown_ranges, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 }
@@ -771,6 +772,8 @@ function update_clothed_eb_normal(save : myClasses.GameSave) {
     // Setting up stuff
     // @ts-ignore
     const sheet  = get_sheet('Clothed EB')
+    // @ts-ignore
+    const data_ui : myClasses.AppScriptUiInterface = new AppScriptUiInterface(save)
     const best_eb_set = find_best_eb_set(save, save.get_arti_inv)
     const set_effect = determine_set_boost(best_eb_set)
     const clothed_eb = calculate_clothed_eb(save.PE, save.prop_bonus, save.SE, save.soul_bonus, set_effect)
@@ -779,10 +782,9 @@ function update_clothed_eb_normal(save : myClasses.GameSave) {
     // Actually filling the sheet data
     // Prefill clothed set values
     create_clothed_role_dropdown(clothed_eb, sheet.getRange("D1"));
-    sheet.getRange("D2").setValue(convert_book_info_into_string(stones))
-    const stone_list = convert_stone_data_into_list(stones)
-    sheet.getRange("D4:F4").setValues([stone_list.prop_stones])
-    sheet.getRange("D6:F6").setValues([stone_list.soul_stones])
+    sheet.getRange("D2").setValue(data_ui.convert_book_into_string(stones.book))
+    sheet.getRange("D4:F4").setValues([data_ui.stone_list.prop_stones])
+    sheet.getRange("D6:F6").setValues([data_ui.stone_list.soul_stones])
     sheet.getRange("F2:G2").merge().setValue(clothed_eb)
     custom_number(false, 2, 6, "Clothed EB")
 
@@ -795,25 +797,15 @@ function update_clothed_eb_normal(save : myClasses.GameSave) {
  */
 function update_clothed_eb_limited() {
     const sheet = get_sheet('Clothed EB')
-
-    // Read in values from the sheet
-    const bob_object = convert_string_into_book(sheet.getRange("D2").getValue());
-    const prop_stones : number[] = [];
-    const soul_stones: number[] = [];
-    sheet.getRange("D4:F4").getValues()[0].forEach((value: number) => {
-        prop_stones.push(value);
-    })
-    sheet.getRange("D6:F6").getValues()[0].forEach((value : number) => {
-        soul_stones.push(value)
-    })
+    const data_list : string[][] = []
+    data_list.push(sheet.getRange("D2").getValue())
+    data_list.push(sheet.getRange("D4:F4").getValues()[0])
+    data_list.push(sheet.getRange("D6:F6").getValues()[0])
+    // @ts-ignore
+    const data_ui : myClasses.AppScriptUiInterface = new AppScriptUiInterface(data_list)
 
     // Convert read in data into actual boost data
-    const stones_object = convert_stone_list_into_data({ prop_stones: prop_stones, soul_stones: soul_stones })
-    const final_set : myTypes.SheetBoostData = {
-        book: bob_object,
-        soul_stones : stones_object.soul_stones,
-        prop_stones : stones_object.prop_stones
-    }
+    const final_set = data_ui.boost_data
     const boost_effect = determine_set_boost_extra(final_set)
 
     const data_sheet = get_sheet('Prestige Data')

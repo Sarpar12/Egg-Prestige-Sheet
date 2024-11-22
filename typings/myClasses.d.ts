@@ -45,16 +45,11 @@ declare namespace myClasses {
         readonly stones_dropdown : string[];
         readonly book_dropdown_map : Map<string, string>;
 
-        /**
-         * this function is only used to instantiate
-         * prop and soul counts given a gamesave
-         */
-        setup_class_variables() : void;
-
         get stone_dropdown_values() : string[];
         get boost_data() : myTypes.SheetBoostData;
         get stone_list() : myTypes.StoneList
         get book() : SheetBoostData["book"];
+        get book_dropdown() : string[];
         convert_book_into_string(book : SheetBoostData["book"]) : string;
         convert_string_into_book(input : string) : SheetBoostData["book"];
     }

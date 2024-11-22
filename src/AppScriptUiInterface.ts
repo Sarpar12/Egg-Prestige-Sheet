@@ -29,17 +29,18 @@ export class AppScriptUiInterface implements myClasses.AppScriptUiInterface {
     constructor(save : myClasses.GameSave);
     constructor(boost_data : myTypes.SheetBoostData);
     constructor(sheet_data : string[][]);
-    constructor(arg : myClasses.GameSave | myTypes.SheetBoostData | (string | number)[][]) {
-        // Instance of
-        if (arg instanceof Array) {
-            let book = convert_string_into_book(arg[0][0] as string)
+    constructor(arg ?: myClasses.GameSave | myTypes.SheetBoostData | (string | number)[][]) {
+        if (arg === undefined) {}
+        // Instance of array
+        else if (arg instanceof Array) {
+            let book = this.convert_string_into_book(arg[0][0] as string)
             this.book_level = book.level
             this.book_rarity = book.rarity
-            let soul_stones = arg[1] as number[];
+            let soul_stones = arg[2] as number[];
             this.t1_soul_count = soul_stones[0] as number;
             this.t2_soul_count = soul_stones[1] as number;
             this.t3_soul_count = soul_stones[2] as number;
-            let prop_stones = arg[2] as number[];
+            let prop_stones = arg[1] as number[];
             this.t1_prop_count = prop_stones[0] as number;
             this.t2_prop_count = prop_stones[1] as number;
             this.t3_soul_count = prop_stones[2] as number;
@@ -64,10 +65,6 @@ export class AppScriptUiInterface implements myClasses.AppScriptUiInterface {
         this.t2_prop_count = boost_data.prop_stones[1]
         this.t3_prop_count = boost_data.prop_stones[2]
     }
-
-    setup_class_variables() : void {
-        Logger.log("test")
-    };
 
     // Getters
     get stone_dropdown_values() : string[] {
@@ -97,6 +94,10 @@ export class AppScriptUiInterface implements myClasses.AppScriptUiInterface {
             soul_stones : { 0 : this.t1_soul_count, 1 : this.t2_soul_count, 2 : this.t3_soul_count },
             prop_stones : { 0 : this.t1_prop_count, 1 : this.t2_prop_count, 2 : this.t3_prop_count },
         }
+    }
+
+    get book_dropdown() : string[] {
+        return Array.from(this.book_dropdown_map.values())
     }
 
     // actual functions
